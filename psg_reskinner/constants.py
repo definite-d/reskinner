@@ -25,7 +25,10 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-from PySimpleGUI import ttk_part_mapping_dict
+try:
+    from FreeSimpleGUI import ttk_part_mapping_dict
+except ImportError:
+    from PySimpleGUI import ttk_part_mapping_dict
 
 ALTER_MENU_ACTIVE_COLORS = True
 DEFAULT_ANIMATED_RESKIN_DURATION = 450

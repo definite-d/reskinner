@@ -31,19 +31,34 @@ from tkinter.ttk import Style
 from tkinter.ttk import Widget as TTKWidget
 from typing import Callable, Optional, Union
 
-from PySimpleGUI import (
-    TITLEBAR_METADATA_MARKER,
-    Checkbox,
-    Column,
-    Combo,
-    Element,
-    OptionMenu,
-    ProgressBar,
-    Radio,
-    Table,
-    Tree,
-    Window,
-)
+try:
+    from FreeSimpleGUI import (
+        TITLEBAR_METADATA_MARKER,
+        Checkbox,
+        Column,
+        Combo,
+        Element,
+        OptionMenu,
+        ProgressBar,
+        Radio,
+        Table,
+        Tree,
+        Window,
+    )
+except ImportError:
+    from PySimpleGUI import (
+        TITLEBAR_METADATA_MARKER,
+        Checkbox,
+        Column,
+        Combo,
+        Element,
+        OptionMenu,
+        ProgressBar,
+        Radio,
+        Table,
+        Tree,
+        Window,
+    )
 
 from .colorprocessor import ColorProcessor
 from .constants import (
