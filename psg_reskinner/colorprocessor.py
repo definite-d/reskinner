@@ -33,22 +33,43 @@ from tkinter.ttk import Style
 from typing import Any, Callable, Dict, Tuple, Union
 
 from colour import Color
-from PySimpleGUI import (
-    COLOR_SYSTEM_DEFAULT,
-    DEFAULT_PROGRESS_BAR_COMPUTE,
-    Checkbox,
-    Column,
-    Combo,
-    Element,
-    OptionMenu,
-    ProgressBar,
-    Radio,
-    Table,
-    Tree,
-    Window,
-    rgb,
-)
-from PySimpleGUI.PySimpleGUI import _hex_to_hsl, _hsl_to_rgb  # noqa
+try:
+    from FreeSimpleGUI import (
+        COLOR_SYSTEM_DEFAULT,
+        DEFAULT_PROGRESS_BAR_COMPUTE,
+        Checkbox,
+        Column,
+        Combo,
+        Element,
+        OptionMenu,
+        ProgressBar,
+        Radio,
+        Table,
+        Tree,
+        Window,
+        rgb,
+    )
+except ImportError:
+        from PySimpleGUI import (
+        COLOR_SYSTEM_DEFAULT,
+        DEFAULT_PROGRESS_BAR_COMPUTE,
+        Checkbox,
+        Column,
+        Combo,
+        Element,
+        OptionMenu,
+        ProgressBar,
+        Radio,
+        Table,
+        Tree,
+        Window,
+        rgb,
+    )
+try:
+    from FreeSimpleGUI import _hex_to_hsl, _hsl_to_rgb  # noqa
+except ImportError:
+    from PySimpleGUI.PySimpleGUI import _hex_to_hsl, _hsl_to_rgb  # type: ignore
+
 
 from .constants import (
     HSL_INTERPOLATION,
