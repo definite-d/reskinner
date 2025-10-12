@@ -1,9 +1,7 @@
 .env
+.venv/
 .history
-.idea
+.idea/
 .mypy_cache
-__pycache__
-pycache
-build
-dist
-psg_reskinner.egg-info
+.*__pycache__.*/
+uv.lock
