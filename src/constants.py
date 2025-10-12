@@ -7,9 +7,9 @@ DISABLED_COLOR = "#A3A3A3"
 DEFAULT_THEME_NAME = "GrayGrayGray"
 
 class InterpolationMode(StrEnum):
-    HSL = 'hsv'
     HUE = 'hue'
     RGB = 'rgb'
+    HSL = "hsl"
 
 class SGElement(StrEnum):
     BUTTON = "button",
