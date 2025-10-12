@@ -1,13 +1,10 @@
-[build-system]
-requires = ["setuptools>=61.0.0", "wheel", "bumpver"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "psg_reskinner"
+name = "reskinner"
+readme = "README.md"
+requires-python = ">=3.7"
 description = "Instantaneous theme changing for PySimpleGUI windows."
-version = "3.1.0"
-readme = "./res/DESCRIPTION.md"
-authors = [{ name = "Divine U. Afam-Ifediogor", email = "divineafam@gmail.com" }]
+version = "3.2.0"
+authors = [{ name = "Divine U. Afam-Ifediogor" }]
 license = { file = "LICENSE" }
 classifiers = [
     "License :: OSI Approved :: MIT License",
@@ -18,38 +15,20 @@ classifiers = [
 keywords = ["PySimpleGUI", "reskin", "realtime", "theme", "color"]
 dependencies = [
     "colour>=0.1.5",
-    "PySimpleGUI>=4.60.3.96"
 ]
-requires-python = ">=3.7"
 
 [project.urls]
 "Homepage" = "https://github.com/definite-d/psg_reskinner/"
 "Bug Tracker" = "https://github.com/definite-d/psg_reskinner/issues/"
 
-[tool.setuptools]
-packages = ["psg_reskinner"]
 
-[tool.bumpver]
-current_version = "3.1.0"
-version_pattern = "MAJOR.MINOR.PATCH"
-commit_message = "New {new_version} update from {old_version}"
-commit = true
-tag = true
-push = true
-
-[tool.bumpver.file_patterns]
-"pyproject.toml" = [
-    'current_version = "{version}"',
-    'version = "{version}"',
+[project.optional-dependencies]
+psg = [
+    "PySimpleGUI>=4.60.3.96",
 ]
-"./README.md" = [
-    "Version {version}",
-]
-"./res/README_DRY.md" = [
-    "Version {version}",
-]
-"psg_reskinner/version.py" = [
-    '__version__: str = "{version}"'
+fsg = [
+    "FreeSimpleGUI>=5.0.0"
 ]
 
-
+[[tool.uv.index]]
+url = "https://pysimplegui.net/install"
