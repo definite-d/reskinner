@@ -12,7 +12,7 @@ class InterpolationMode(StrEnum):
     HSL = "hsl"
 
 class SGElement(StrEnum):
-    BUTTON = "button",
+    BUTTON = "button"
     BUTTONMENU = "buttonmenu"
     CANVAS = "canvas"
     CHECKBOX = "checkbox"
@@ -20,25 +20,25 @@ class SGElement(StrEnum):
     COMBO = "combo"
     FRAME = "frame"
     GRAPH = "graph"
-    HORIZONTALSEPARATOR = "horizontalseparator",
+    HORIZONTALSEPARATOR = "horizontalseparator"
     IMAGE = "image"
     INPUT = "input"
-    LISTBOX = "listbox",
+    LISTBOX = "listbox"
     MENU = "menu"
-    MULTILINE = "multiline",
+    MULTILINE = "multiline"
     OPTIONMENU = "optionmenu"
     PANE = "pane"
-    PROGRESSBAR = "progressbar",
+    PROGRESSBAR = "progressbar"
     RADIO = "radio"
-    SIZEGRIP = "sizegrip",
+    SIZEGRIP = "sizegrip"
     SLIDER = "slider"
-    SPIN = "spin",
+    SPIN = "spin"
     STATUSBAR = "statusbar"
-    TABGROUP = "tabgroup",
-    TABLE = "table",
-    TEXT = "text",
-    TREE = "tree",
-    VERTICALSEPARATOR = "verticalseparator",
+    TABGROUP = "tabgroup"
+    TABLE = "table"
+    TEXT = "text"
+    TREE = "tree"
+    VERTICALSEPARATOR = "verticalseparator"
 
 NON_GENERIC_ELEMENTS = [
     SGElement.BUTTON,
