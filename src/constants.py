@@ -14,7 +14,7 @@ class InterpolationMode(StrEnum):
     RGB = "rgb"
 
 
-class SGElement(StrEnum):
+class ElementName(StrEnum):
     BUTTON = "button"
     BUTTONMENU = "buttonmenu"
     CANVAS = "canvas"
@@ -45,18 +45,18 @@ class SGElement(StrEnum):
 
 
 NON_GENERIC_ELEMENTS = [
-    SGElement.BUTTON,
-    SGElement.HORIZONTALSEPARATOR,
-    SGElement.LISTBOX,
-    SGElement.MULTILINE,
-    SGElement.PROGRESSBAR,
-    SGElement.SIZEGRIP,
-    SGElement.SPIN,
-    SGElement.TABGROUP,
-    SGElement.TABLE,
-    SGElement.TEXT,
-    SGElement.TREE,
-    SGElement.VERTICALSEPARATOR,
+    ElementName.BUTTON,
+    ElementName.HORIZONTALSEPARATOR,
+    ElementName.LISTBOX,
+    ElementName.MULTILINE,
+    ElementName.PROGRESSBAR,
+    ElementName.SIZEGRIP,
+    ElementName.SPIN,
+    ElementName.TABGROUP,
+    ElementName.TABLE,
+    ElementName.TEXT,
+    ElementName.TREE,
+    ElementName.VERTICALSEPARATOR,
 ]
 
 _COLOR_MAPPING = {
