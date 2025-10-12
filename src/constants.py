@@ -43,6 +43,10 @@ class ElementName(StrEnum):
     TREE = "tree"
     VERTICALSEPARATOR = "verticalseparator"
 
+    @staticmethod
+    def from_element(element: sg.Element):
+        return ElementName(type(element).__name__.lower())
+
 
 NON_GENERIC_ELEMENTS = [
     ElementName.BUTTON,
