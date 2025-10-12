@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import StrEnum, Enum
 
 from .sg import sg
 
@@ -70,7 +70,7 @@ _COLOR_MAPPING = {
 }
 
 
-class ScrollbarColorKey(StrEnum):
+class ScrollbarColorKey(Enum):
     TROUGH = _COLOR_MAPPING[sg.ttk_part_mapping_dict["Trough Color"]]
     FRAME = _COLOR_MAPPING[sg.ttk_part_mapping_dict["Frame Color"]]
     BACKGROUND = _COLOR_MAPPING[sg.ttk_part_mapping_dict["Background Color"]]
