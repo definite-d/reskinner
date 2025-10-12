@@ -1,4 +1,5 @@
 from enum import StrEnum
+
 from .sg import sg
 
 
@@ -6,10 +7,12 @@ DEFAULT_ANIMATED_RESKIN_DURATION = 450
 DISABLED_COLOR = "#A3A3A3"
 DEFAULT_THEME_NAME = "GrayGrayGray"
 
+
 class InterpolationMode(StrEnum):
-    HUE = 'hue'
-    RGB = 'rgb'
     HSL = "hsl"
+    HUE = "hue"
+    RGB = "rgb"
+
 
 class SGElement(StrEnum):
     BUTTON = "button"
@@ -40,6 +43,7 @@ class SGElement(StrEnum):
     TREE = "tree"
     VERTICALSEPARATOR = "verticalseparator"
 
+
 NON_GENERIC_ELEMENTS = [
     SGElement.BUTTON,
     SGElement.HORIZONTALSEPARATOR,
@@ -64,6 +68,7 @@ _COLOR_MAPPING = {
     "Text Color": "TEXT",
     "Slider Color": "SCROLL",
 }
+
 
 class ScrollbarColorKey(StrEnum):
     TROUGH = _COLOR_MAPPING[sg.ttk_part_mapping_dict["Trough Color"]]
