@@ -13,8 +13,9 @@
 ### V4 Release
 With the release of Version 4.0.0, the project is now officially known as "Reskinner". This is a re-write, focusing on 
 improvements to the structure and API of the project.
+
 #### Biggest changes
-- Full support for [FreeSimpleGUI](https://github.com/spyoungtech/FreeSimpleGUI) is here. Thanks to [@deajan](https://github.com/deajan) for the contribution.
+- Full support for [FreeSimpleGUI](https://github.com/spyoungtech/FreeSimpleGUI) is here. Thanks to [@deajan](https://github.com/deajan) for the contribution and bringing it to my notice.
 - The entire project has been rewritten from scratch for better maintainability, extensibility, and performance.
 - The `animated_reskin` function is no more... because the `reskin` function itself has animation parameters baked in now.
 - The API for `reskin` has been improved to require only 2 parameters; the window, and the desired theme.
