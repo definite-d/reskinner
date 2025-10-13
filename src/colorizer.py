@@ -32,7 +32,7 @@ def _is_valid_color(color: str) -> bool:
         return True
 
 
-def _normalize_tk_color(tk_color) -> str:
+def _normalize_tk_color(tk_color) -> Color:
     """
     Internal use only.
 
@@ -43,26 +43,18 @@ def _normalize_tk_color(tk_color) -> str:
     """
     result = Color()
     result.set_rgb(tuple(x / 65535 for x in DEFAULT_WINDOW.TKroot.winfo_rgb(tk_color)))
-    return result.get_hex_l()
+    return result
 
 
 @lru_cache
 def _safe_color(
     value: Union[str, type(sg.COLOR_SYSTEM_DEFAULT)],
-    default_color: str,
-) -> str:
-    """
-    Internal use only.
-
-    If the value is a valid color, we return that. Otherwise, we return the default color.
-
-    :param value: The value to check for safety.
-    :param default_color: The expected default color.
-    :return: A TK-safe color, no matter what the input value is.
-    """
-    if _is_valid_color(value):
-        return value
-    return _normalize_tk_color(default_color)
+    default_color_function: Callable[[], str],
+) -> Color:
+    try:
+        return Color(value)
+    except ValueError:
+        return _normalize_tk_color(default_color_function())
 
 
 def _default_window_cget(attribute: str):
