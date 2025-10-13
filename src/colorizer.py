@@ -98,21 +98,20 @@ def _run_progressbar_computation(theme_dict: ThemeDict):
 
 
 def _get_checkbox_radio_selectcolor(background_color, text_color) -> str:
-    # PySimpleGUI's color conversion functions give different results than those of the colour module, so I can't
-    # use the color module's functionality for everything here.
+    # PySimpleGUI's color conversion functions give different results than those of the colour module
+    # due to floating point truncation, so I can't use the color module's functionality for everything here.
     if not all([_is_valid_color(background_color), _is_valid_color(text_color)]):
         return _default_element_cget(ElementName.CHECKBOX, "selectcolor") or "black"
     background_color: str = Color(background_color).get_hex_l()
     text_color: str = Color(text_color).get_hex_l()
-    # TODO: Get the actual locations of these functions.
-    background_hsl: Tuple[float, float, float] = _hex_to_hsl(background_color)
-    text_hsl: Tuple[float, float, float] = _hex_to_hsl(text_color)
+    background_hsl: Tuple[float, float, float] = sg._hex_to_hsl(background_color)
+    text_hsl: Tuple[float, float, float] = sg._hex_to_hsl(text_color)
     l_delta: float = (
         abs(text_hsl[2] - background_hsl[2])
         / 10
         * (1 if text_hsl[2] < background_hsl[2] else -1)
     )
-    rgb_ = _hsl_to_rgb(
+    rgb_ = sg._hsl_to_rgb(
         background_hsl[0], background_hsl[1], background_hsl[2] + l_delta
     )
     result: str = sg.rgb(*rgb_)
