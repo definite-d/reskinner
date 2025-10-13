@@ -90,3 +90,10 @@ def hsl(start: Color, end: Color, progress: float):
             "luminance": _lerp,
         },
     )
+
+
+INTERPOLATION_MODES = {
+    "hsl": hsl,
+    "hue": hue,
+    "rgb": rgb,
+}
