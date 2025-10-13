@@ -1,12 +1,13 @@
-from tkinter.ttk import Style
-from tkinter import Frame as TKFrame, Menu as TKMenu, Widget
-from typing import Dict, Union, Tuple, Callable, Literal
-from colour import Color
 from functools import lru_cache
+from tkinter import Frame as TKFrame, Menu as TKMenu, Widget
+from tkinter.ttk import Style
+from typing import Dict, Union, Tuple, Callable, Literal
 
-from .interpolation import INTERPOLATION_MODES, InterpolationMethod
-from .constants import ElementName, ScrollbarColorKey
+from colour import Color
+
+from .constants import ElementName, ScrollbarColorKey, LRU_MAX_SIZE
 from .default_window import DEFAULT_ELEMENTS, DEFAULT_WINDOW
+from .interpolation import INTERPOLATION_MODES, InterpolationMethod
 from .sg import sg
 
 ThemeDict = Dict[str, Union[str, int, Tuple[str, str]]]
@@ -47,7 +48,7 @@ def _normalize_tk_color(tk_color) -> Color:
     return result
 
 
-@lru_cache(maxsize=24)
+@lru_cache(LRU_MAX_SIZE)
 def _safe_color(
     value: Union[str, type(sg.COLOR_SYSTEM_DEFAULT)],
     default_color_function: Callable[[], str],
@@ -70,7 +71,7 @@ def _default_window_cget(attribute: str):
     return DEFAULT_WINDOW.TKroot[attribute]
 
 
-@lru_cache
+@lru_cache(maxsize=LRU_MAX_SIZE)
 def _default_element_cget(element_name: str, attribute: str) -> Union[str, Widget]:
     """
     Internal use only.
@@ -119,7 +120,7 @@ def _get_checkbox_radio_selectcolor(background_color, text_color) -> str:
     return result
 
 
-@lru_cache
+@lru_cache(maxsize=LRU_MAX_SIZE)
 def _default_combo_popdown_cget(attribute: str):
     DEFAULT_WINDOW.TKroot.tk.call(
         "eval",
@@ -128,7 +129,7 @@ def _default_combo_popdown_cget(attribute: str):
     return DEFAULT_WINDOW.TKroot.tk.call("eval", f"$defaultcombo.f.l cget -{attribute}")
 
 
-@lru_cache
+@lru_cache(maxsize=LRU_MAX_SIZE)
 def _default_combo_listbox_cget(attribute: str):
     DEFAULT_WINDOW.TKroot.tk.call(
         "eval",
