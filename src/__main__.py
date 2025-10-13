@@ -79,3 +79,7 @@ def main():
 
     # % END DEMO % #
     return
+
+
+if __name__ == "__main__":
+    main()
