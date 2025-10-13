@@ -1,5 +1,3 @@
-from typing import Callable, Optional
-
 from .colorizer import Colorizer, ThemeDict
 from .sg import sg
 
