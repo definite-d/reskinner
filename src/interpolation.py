@@ -7,8 +7,12 @@ def _clamp(v: float):
     return min(max(v, 0), 1)
 
 
-class InterpolationMethod(Protocol):
+class InterpolationFormula(Protocol):
     def __call__(self, start: float, end: float, progress: float) -> float: ...
+
+
+class InterpolationMethod(Protocol):
+    def __call__(self, start: Color, end: Color, progress: float) -> Color: ...
 
 
 def _lerp(start: float, end: float, progress: float):
@@ -30,7 +34,7 @@ def _interpolate(
     start: Color,
     end: Color,
     progress: float,
-    components_and_methods: Dict[str, InterpolationMethod],
+    components_and_methods: Dict[str, InterpolationFormula],
 ):
     if progress == 1:
         return end
