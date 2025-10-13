@@ -22,13 +22,12 @@ dependencies = [
 "Homepage" = "https://github.com/definite-d/psg_reskinner/"
 "Bug Tracker" = "https://github.com/definite-d/psg_reskinner/issues/"
 
-
 [project.optional-dependencies]
 psg = [
     "PySimpleGUI>=4.60.3.96",
 ]
 fsg = [
-    "FreeSimpleGUI>=5.0.0"
+    "FreeSimpleGUI>=5.0.0",
 ]
 
 [[tool.uv.index]]
