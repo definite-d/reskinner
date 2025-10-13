@@ -1,9 +1,10 @@
 from tkinter.ttk import Style
 from tkinter import Frame as TKFrame, Menu as TKMenu, Widget
-from typing import Dict, Union, Tuple, Callable
+from typing import Dict, Union, Tuple, Callable, Literal
 from colour import Color
 from functools import lru_cache
 
+from .interpolation import INTERPOLATION_MODES, InterpolationMethod
 from .constants import ElementName, ScrollbarColorKey
 from .default_window import DEFAULT_ELEMENTS, DEFAULT_WINDOW
 from .sg import sg
@@ -69,7 +70,8 @@ def _default_window_cget(attribute: str):
     return DEFAULT_WINDOW.TKroot[attribute]
 
 
-def _default_element_cget(element_name: str, attribute: str):
+@lru_cache
+def _default_element_cget(element_name: str, attribute: str) -> Union[str, Widget]:
     """
     Internal use only.
 
@@ -138,20 +140,41 @@ def _default_combo_listbox_cget(attribute: str):
 class Colorizer:
     def __init__(
         self,
-        theme_dict: ThemeDict,
+        old_theme_dict: ThemeDict,
+        new_theme_dict: ThemeDict,
+        progress: float,
         styler: Union[Style, None] = None,
+        interpolation_mode: Literal["rgb", "hue", "hsl"] = "rgb",
     ):
-        self.theme_dict = _run_progressbar_computation(theme_dict)
-        self.styler = styler if styler else Style()
+        self.old_theme_dict: ThemeDict = _run_progressbar_computation(old_theme_dict)
+        self.new_theme_dict: ThemeDict = _run_progressbar_computation(new_theme_dict)
+        self.progress: float = progress
+        self.styler: Style = styler if styler else Style()
+        self.interpolate: InterpolationMethod = INTERPOLATION_MODES[interpolation_mode]
 
-    def _get_color_by_themedict_color_key(self, key: ThemeDictColorKey):
+    def _color(
+        self,
+        key: ThemeDictColorKey,
+        default_color_function: Callable[[], str],
+    ) -> str:
         if isinstance(key, str):
-            return self.theme_dict[key]
+            start, end = self.old_theme_dict[key], self.new_theme_dict[key]
         elif isinstance(key, tuple):
             key, index = key
-            return self.theme_dict[key][index]
+            start, end = (
+                self.old_theme_dict[key][index],
+                self.new_theme_dict[key][index],
+            )
         else:
             raise ValueError("Invalid themedict key")
+
+        try:
+            start = _safe_color(start, default_color_function)
+            end = _safe_color(end, default_color_function)
+        except ValueError:
+            raise ValueError("The referenced themedict value is not a valid color.")
+
+        return self.interpolate(start, end, self.progress).get_hex_l()
 
     def _configure(
         self,
@@ -168,9 +191,8 @@ class Colorizer:
         :return: None
         """
         _configurations = {
-            attribute: _safe_color(
-                self._get_color_by_themedict_color_key(theme_dict_color_key),
-                func_to_get_default_color(attribute),
+            attribute: self._color(
+                theme_dict_color_key, lambda: func_to_get_default_color(attribute)
             )
             for attribute, theme_dict_color_key in attributes_to_themedict_color_keys.items()
         }
@@ -223,9 +245,9 @@ class Colorizer:
             configuration_key: [
                 (
                     k,
-                    _safe_color(
-                        self._get_color_by_themedict_color_key(v),
-                        self.styler.lookup(
+                    self._color(
+                        v,
+                        lambda: self.styler.lookup(
                             default_style,
                             configuration_key,
                             [k] if pass_state else None,
@@ -287,7 +309,7 @@ class Colorizer:
             combo.widget.tk.call("eval", command)
 
         self._configure(
-            configuration, _configure_combo_popdown, _get_combo_popdown_default
+            configuration, _configure_combo_popdown, _default_combo_popdown_cget
         )
 
     def optionmenu_menu(
@@ -402,7 +424,7 @@ class Colorizer:
                 "selectbackground": "TEXT_INPUT",
             },
             _configure_combo_listbox,
-            _get_combo_listbox_default,
+            _default_combo_listbox_cget,
         )
         # Configuring the combo itself.
         style_name = combo.widget["style"]
@@ -430,14 +452,16 @@ class Colorizer:
 
     def checkbox_or_radio(self, element: Union[sg.Checkbox, sg.Radio]):
         element_name = ElementName.from_element(element)
-        toggle = _get_checkbox_radio_selectcolor(
-            _safe_color(
-                self._get_color_by_themedict_color_key("BACKGROUND"),
-                _default_element_cget(element_name, "selectcolor"),
-            ),
-            _safe_color(
-                self._get_color_by_themedict_color_key("TEXT"),
-                _default_element_cget(element_name, "selectcolor"),
+        toggle = (
+            _get_checkbox_radio_selectcolor(
+                self._color(
+                    "BACKGROUND",
+                    lambda: _default_element_cget(element_name, "selectcolor"),
+                ),
+                self._color(
+                    "TEXT",
+                    lambda: _default_element_cget(element_name, "selectcolor"),
+                ),
             ),
         )
         element.widget.configure(
