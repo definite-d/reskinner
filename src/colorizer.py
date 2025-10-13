@@ -47,7 +47,7 @@ def _normalize_tk_color(tk_color) -> Color:
     return result
 
 
-@lru_cache
+@lru_cache(maxsize=24)
 def _safe_color(
     value: Union[str, type(sg.COLOR_SYSTEM_DEFAULT)],
     default_color_function: Callable[[], str],
