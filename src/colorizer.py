@@ -118,7 +118,7 @@ def _get_checkbox_radio_selectcolor(background_color, text_color) -> str:
 
 
 @lru_cache
-def _get_combo_popdown_default(attribute):
+def _default_combo_popdown_cget(attribute: str):
     DEFAULT_WINDOW.TKroot.tk.call(
         "eval",
         f"set defaultcombo [ttk::combobox::PopdownWindow {DEFAULT_ELEMENTS['combo'].widget}]",
@@ -127,7 +127,7 @@ def _get_combo_popdown_default(attribute):
 
 
 @lru_cache
-def _get_combo_listbox_default(attribute):
+def _default_combo_listbox_cget(attribute: str):
     DEFAULT_WINDOW.TKroot.tk.call(
         "eval",
         f"set defaultcombo [ttk::combobox::PopdownWindow {DEFAULT_ELEMENTS['combo'].widget}]",
