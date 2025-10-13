@@ -8,10 +8,23 @@ from .sg import sg
 
 class ElementReskinner:
     def __init__(self, colorizer: Colorizer):
+        """
+        Initializes an ElementReskinner instance.
+
+        :param colorizer: The Colorizer instance to use for reskinning
+        :type colorizer: Colorizer
+        """
         self._titlebar_row_frame = "Not Set"
         self.colorizer: Colorizer = colorizer
 
     def reskin_element(self, element: sg.Element):
+        """
+        Reskin an element based on its type.
+
+        :param element: The PySimpleGUI element to reskin
+        :type element: sg.Element
+        """
+
         element_name = ElementName.from_element(element)
 
         # Generic tweaks
