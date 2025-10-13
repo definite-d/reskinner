@@ -165,19 +165,19 @@ class Colorizer:
                 self.new_theme_dict[key][index],
             )
         else:
-            raise ValueError("Invalid themedict key")
+            raise ValueError("Invalid theme_dict key")
 
         try:
             start = _safe_color(start, default_color_function)
             end = _safe_color(end, default_color_function)
         except ValueError:
-            raise ValueError("The referenced themedict value is not a valid color.")
+            raise ValueError("The referenced theme_dict value is not a valid color.")
 
         return self.interpolate(start, end, self.progress).get_hex_l()
 
     def _configure(
         self,
-        attributes_to_themedict_color_keys: ThemeConfiguration,
+        attributes_to_theme_dict_color_keys: ThemeConfiguration,
         func_to_apply_configurations: Callable,
         func_to_get_default_color: Callable,
     ):
@@ -193,7 +193,7 @@ class Colorizer:
             attribute: self._color(
                 theme_dict_color_key, lambda: func_to_get_default_color(attribute)
             )
-            for attribute, theme_dict_color_key in attributes_to_themedict_color_keys.items()
+            for attribute, theme_dict_color_key in attributes_to_theme_dict_color_keys.items()
         }
         func_to_apply_configurations(**_configurations)
 
