@@ -1,4 +1,10 @@
-from enum import Enum, StrEnum
+from enum import Enum
+
+try:
+    from enum import StrEnum
+except ImportError:
+    # Python < 3.11
+    from strenum import StrEnum
 
 from .sg import sg
 

@@ -15,6 +15,7 @@ classifiers = [
 keywords = ["PySimpleGUI", "reskin", "realtime", "theme", "color"]
 dependencies = [
     "colour>=0.1.5",
+    'StrEnum; python_version < "3.11"',
 ]
 
 [project.urls]
