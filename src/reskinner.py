@@ -4,13 +4,14 @@ from .colorizer import Colorizer, ThemeDict
 from .sg import sg
 
 
-def _reskin(c: Colorizer):
+def _reskin(window: sg.Window, c: Colorizer, reskin_background: bool = True):
     # Disregard redundant calls
     if c.new_theme_dict == c.old_theme_dict:
         return
 
     # Window level changes
-    if reskin
+    if reskin_background:
+        c.window(window)
 
 
 def reskin(old_theme, new_theme):
