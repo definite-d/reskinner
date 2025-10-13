@@ -3,8 +3,8 @@ from enum import StrEnum, Enum
 from .sg import sg
 
 
+ALTER_MENU_ACTIVE_COLORS = True
 DEFAULT_ANIMATED_RESKIN_DURATION = 450
-DISABLED_COLOR = "#A3A3A3"
 DEFAULT_THEME_NAME = "GrayGrayGray"
 
 
