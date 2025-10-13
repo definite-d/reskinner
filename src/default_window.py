@@ -1,6 +1,5 @@
-from .sg import sg
 from .constants import DEFAULT_THEME_NAME, ElementName
-
+from .sg import sg
 
 _previous_theme = sg.theme()
 sg.theme(DEFAULT_THEME_NAME)

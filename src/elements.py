@@ -1,8 +1,8 @@
-from typing import Union
 from tkinter.ttk import Widget as TTKWidget
+from typing import Union
 
 from .colorizer import Colorizer
-from .constants import ElementName, ALTER_MENU_ACTIVE_COLORS
+from .constants import ALTER_MENU_ACTIVE_COLORS, ElementName
 from .sg import sg
 
 

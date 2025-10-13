@@ -5,12 +5,12 @@ def main():
     Gets called when the module is run instead of imported.
     """
     # % START DEMO % #
-    from .reskinner import reskin
-    from .__version__ import __version__
-
     from random import choice as rc
 
     from reskinner import sg
+
+    from .__version__ import __version__
+    from .reskinner import reskin
 
     right_click_menu = [
         "",
