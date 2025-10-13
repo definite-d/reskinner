@@ -141,7 +141,7 @@ class Colorizer:
         self,
         old_theme_dict: ThemeDict,
         new_theme_dict: ThemeDict,
-        progress: float,
+        progress: float = 0,
         styler: Union[Style, None] = None,
         interpolation_mode: Literal["rgb", "hue", "hsl"] = "rgb",
     ):
