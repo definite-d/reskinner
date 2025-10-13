@@ -1,32 +1,85 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta
 from tkinter import TclError
-from typing import Callable, Dict, Literal
+from typing import Callable, Dict, Literal, Optional, TypeVar
 from warnings import warn
 
-from .elements import ElementReskinner
 from .colorizer import Colorizer, ThemeDict
+from .elements import ElementReskinner
 from .sg import sg
+
+# Type variable for PySimpleGUI elements
+T = TypeVar("T", bound=sg.Element)
+
+# Type alias for element filter function
+ElementFilter = Callable[[T], bool]
 
 
 def reskin(
     window: sg.Window,
     new_theme: str,
-    element_filter: Callable[[sg.Element], bool] = None,
-    theme_function: Callable = sg.theme,
-    lf_table: Dict[str, ThemeDict] = sg.LOOK_AND_FEEL_TABLE,
+    element_filter: Optional[ElementFilter] = None,
+    theme_function: Callable[..., str] = sg.theme,
+    lf_table: Optional[Dict[str, ThemeDict]] = None,
     set_future: bool = True,
     reskin_background: bool = True,
     duration_in_milliseconds: float = 0,
     interpolation_mode: Literal["hsl", "hue", "rgb"] = "rgb",
 ) -> None:
-    old_theme = theme_function()
-    old_theme_dict: ThemeDict = lf_table.get(old_theme, None)
-    new_theme_dict: ThemeDict = sg.LOOK_AND_FEEL_TABLE.get(new_theme, None)
+    """Apply a new theme to a PySimpleGUI window with optional animation.
 
-    if not old_theme_dict:
-        raise ValueError("Invalid `old_theme`; theme not found")
-    elif not new_theme_dict:
-        raise ValueError("Invalid `new_theme`; theme not found")
+    :param window: The PySimpleGUI window to reskin
+    :type window: sg.Window
+    :param new_theme: Name of the theme to apply
+    :type new_theme: str
+    :param element_filter: Optional function to filter which elements to reskin
+    :type element_filter: Optional[ElementFilter]
+    :param theme_function: Function to get/set the current theme
+    :type theme_function: Callable[..., str]
+    :param lf_table: Look and feel table containing theme definitions
+    :type lf_table: Optional[Dict[str, ThemeDict]]
+    :param set_future: If True, set the theme for future windows
+    :type set_future: bool
+    :param reskin_background: If True, reskin the window background
+    :type reskin_background: bool
+    :param duration_in_milliseconds: Duration of animation in milliseconds (0 for instant)
+    :type duration_in_milliseconds: float
+    :param interpolation_mode: Color interpolation mode ("hsl", "hue", or "rgb")
+    :type interpolation_mode: Literal["hsl", "hue", "rgb"]
+    :raises ValueError: If the specified theme is not found
+    :raises TclError: For Tkinter-related errors
+    :raises RuntimeError: If theme reskinning initialization fails
+    """
+    if lf_table is None:
+        lf_table = sg.LOOK_AND_FEEL_TABLE
+
+    if not isinstance(window, sg.Window):
+        raise TypeError(f"Expected a PySimpleGUI Window, got {type(window).__name__}")
+
+    if not isinstance(new_theme, str):
+        raise TypeError(f"Theme name must be a string, got {type(new_theme).__name__}")
+    try:
+        old_theme = theme_function()
+        old_theme_dict: Optional[ThemeDict] = lf_table.get(old_theme)
+        new_theme_dict: Optional[ThemeDict] = lf_table.get(new_theme)
+
+        if not old_theme_dict:
+            raise ValueError(
+                f"Current theme '{old_theme}' not found in look and feel table."
+            )
+
+        if not new_theme_dict:
+            raise ValueError(
+                f"Target theme '{new_theme}' not found in look and feel table."
+            )
+
+    except Exception as e:
+        if not isinstance(e, (ValueError, TypeError)):
+            raise RuntimeError(
+                f"Failed to initialize theme reskinning: {str(e)}"
+            ) from e
+        raise
 
     # Disregard redundant calls
     if (old_theme == new_theme) and (new_theme_dict == old_theme_dict):
@@ -35,16 +88,36 @@ def reskin(
     colorizer = Colorizer(old_theme_dict, new_theme_dict, interpolation_mode)
 
     if duration_in_milliseconds:
+        if (
+            not isinstance(duration_in_milliseconds, (int, float))
+            or duration_in_milliseconds < 0
+        ):
+            raise ValueError("Duration must be a non-negative number")
+
         delta = timedelta(milliseconds=duration_in_milliseconds)
         start = datetime.now()
-        end = start
-        while datetime.now() <= end:
-            colorizer.progress = round((datetime.now() - start) / delta, 4)
-            try:
-                _reskin(colorizer, window, element_filter, reskin_background)
-            except TclError:  # Closed window.
-                warn("The window has already been closed.")
-                return
+        end = start + delta
+
+        try:
+            while datetime.now() <= end:
+                elapsed = datetime.now() - start
+                colorizer.progress = min(
+                    1.0, elapsed.total_seconds() / delta.total_seconds()
+                )
+                try:
+                    _reskin(colorizer, window, element_filter, reskin_background)
+                    window.refresh()  # Ensure UI updates during animation
+                except TclError as e:
+                    if "invalid command name" in str(e):
+                        warn("Window was closed during reskinning")
+                        return
+                    raise  # Re-raise other TclErrors
+
+                window.TKroot.update_idletasks()
+
+        except Exception as e:
+            warn(f"Error during animated reskin: {str(e)}")
+            raise
 
     colorizer.progress = 1
     _reskin(colorizer, window, element_filter, reskin_background)
@@ -56,9 +129,20 @@ def reskin(
 def _reskin(
     colorizer: Colorizer,
     window: sg.Window,
-    element_filter: Callable[[sg.Element], bool] = None,
+    element_filter: Optional[ElementFilter] = None,
     reskin_background: bool = True,
-):
+) -> None:
+    """Handle the actual reskinning of window elements.
+
+    :param colorizer: Colorizer instance for handling color transformations
+    :type colorizer: Colorizer
+    :param window: Window to reskin
+    :type window: sg.Window
+    :param element_filter: Optional function to filter elements
+    :type element_filter: Optional[ElementFilter]
+    :param reskin_background: Whether to reskin the window background
+    :type reskin_background: bool
+    """
     # Window level changes
     if reskin_background:
         colorizer.window(window, {"background": "BACKGROUND"})
@@ -79,6 +163,22 @@ def _reskin(
 
 
 def toggle_transparency(window: sg.Window) -> None:
-    window_bg = window.TKroot.cget("background")
-    transparent_color = window.TKroot.attributes("-transparentcolor")
-    window.set_transparent_color(window_bg if transparent_color == "" else "")
+    """Toggle window transparency.
+
+    :param window: Window to toggle transparency for
+    :type window: sg.Window
+    :raises AttributeError: If window doesn't support transparency
+    :raises TclError: For Tkinter-related errors
+    :raises ValueError: If the window background color is invalid
+    """
+    if not hasattr(window, "TKroot") or not hasattr(window, "set_transparent_color"):
+        raise AttributeError("Window does not support transparency")
+
+    try:
+        window_bg = window.TKroot.cget("background")
+        transparent_color = window.TKroot.attributes("-transparentcolor")
+        window.set_transparent_color(window_bg if transparent_color == "" else "")
+    except TclError as e:
+        if "unknown color name" in str(e):
+            raise ValueError(f"Invalid color value: {window_bg}") from e
+        raise  # Re-raise other TclErrors

@@ -1,91 +1,130 @@
+from __future__ import annotations
+
 from functools import lru_cache
-from tkinter import Frame as TKFrame, Menu as TKMenu, Widget
+from tkinter import Frame as TKFrame
+from tkinter import Menu as TKMenu
+from tkinter import Widget
 from tkinter.ttk import Style
-from typing import Dict, Union, Tuple, Callable, Literal
+from typing import Any, Callable, Dict, Literal, Tuple, TypeVar, Union
 
-from colour import Color
+from colour import Color  # type: ignore[import-untyped]
 
-from .constants import ElementName, ScrollbarColorKey, LRU_MAX_SIZE
+from .constants import LRU_MAX_SIZE, ElementName, ScrollbarColorKey
 from .default_window import DEFAULT_ELEMENTS, DEFAULT_WINDOW
 from .interpolation import INTERPOLATION_MODES, InterpolationMethod
 from .sg import sg
 
+# Type variables and aliases
+T = TypeVar("T")
+ColorType = Union[str, Tuple[float, float, float], Tuple[float, float, float, float]]
 ThemeDict = Dict[str, Union[str, int, Tuple[str, str]]]
 ThemeDictColorKey = Union[str, Tuple[str, int]]
 ThemeConfiguration = Dict[str, ThemeDictColorKey]
+ElementFilter = Callable[[sg.Element], bool]  # type: ignore[valid-type]
 
 
 def _is_valid_color(color: str) -> bool:
-    """
-    Internal use only.
+    """Check if a color string is valid.
 
-    Checks if a color is valid or not
-
-    :param color: A color string to be checked.
-    :return: True or False.
+    :param color: The color string to validate
+    :type color: str
+    :return: True if the color is valid, False otherwise
+    :rtype: bool
     """
-    if not color:
+    if not color or not isinstance(color, str):
         return False
+
     try:
+        # Try to create a Color object and get its hex representation
         Color(color).get_hex_l()
-    except ValueError:
-        return False
-    else:
         return True
+    except (ValueError, AttributeError):
+        return False
 
 
-def _normalize_tk_color(tk_color) -> Color:
+def _normalize_tk_color(tk_color: str) -> Color:
+    """Convert a Tkinter color to a Color object.
+
+    :param tk_color: The Tkinter color string to convert
+    :type tk_color: str
+    :return: A Color object representing the input color
+    :rtype: Color
+    :raises RuntimeError: If default window is not properly initialized
+    :raises ValueError: If the color cannot be converted
     """
-    Internal use only.
+    if not hasattr(DEFAULT_WINDOW, "TKroot"):
+        raise RuntimeError("Default window not properly initialized")
 
-    Converts TK system colors to regular hex colors.
+    try:
+        # Get RGB values from Tkinter (0-65535 range)
+        rgb = DEFAULT_WINDOW.TKroot.winfo_rgb(tk_color)
+        # Convert to 0-1 range expected by Color
+        normalized = tuple(x / 65535 for x in rgb)
 
-    :param tk_color: The TK color to be converted.
-    :return: A hex color string.
-    """
-    result = Color()
-    result.set_rgb(tuple(x / 65535 for x in DEFAULT_WINDOW.TKroot.winfo_rgb(tk_color)))
-    return result
+        result = Color()
+        result.set_rgb(normalized)
+        return result
+    except Exception as e:
+        raise ValueError(f"Failed to normalize Tk color '{tk_color}': {e}") from e
 
 
-@lru_cache(LRU_MAX_SIZE)
+@lru_cache(maxsize=LRU_MAX_SIZE)
 def _safe_color(
-    value: Union[str, type(sg.COLOR_SYSTEM_DEFAULT)],
+    value: Union[str, type(sg.COLOR_SYSTEM_DEFAULT)],  # type: ignore[valid-type]
     default_color_function: Callable[[], str],
 ) -> Color:
+    """Safely convert a color value to a Color object, with caching.
+
+    :param value: The color value to convert
+    :type value: Union[str, type(sg.COLOR_SYSTEM_DEFAULT)]
+    :param default_color_function: Function to get default color if conversion fails
+    :type default_color_function: Callable[[], str]
+    :return: The converted Color object
+    :rtype: Color
+    """
     try:
         return Color(value)
     except ValueError:
         return _normalize_tk_color(default_color_function())
 
 
-def _default_window_cget(attribute: str):
-    """
+def _default_window_cget(attribute: str) -> Any:
+    """Get a window attribute using cget.
+
     Internal use only.
 
-    Shortcut function that calls the cget function of the default window.
-
-    :param attribute: The attribute to pass to the cget function.
-    :return: The result of the cget function.
+    :param attribute: The attribute to pass to the cget function
+    :type attribute: str
+    :return: The result of the cget function
+    :rtype: Any
     """
     return DEFAULT_WINDOW.TKroot[attribute]
 
 
 @lru_cache(maxsize=LRU_MAX_SIZE)
 def _default_element_cget(element_name: str, attribute: str) -> Union[str, Widget]:
-    """
+    """Get an element attribute using cget.
+
     Internal use only.
 
-    Shortcut function that calls the cget function of a default element.
-
-    :param element_name: The name of the element.
-    :param attribute: The attribute to pass to the cget function.
-    :return: The result of the cget function.
+    :param element_name: The name of the element
+    :type element_name: str
+    :param attribute: The attribute to pass to the cget function
+    :type attribute: str
+    :return: The result of the cget function
+    :rtype: Union[str, Widget]
     """
     return DEFAULT_ELEMENTS[element_name].widget[attribute]
 
 
-def _run_progressbar_computation(theme_dict: ThemeDict):
+def _run_progressbar_computation(theme_dict: ThemeDict) -> ThemeDict:
+    """Compute progress bar colors based on theme settings.
+
+    :param theme_dict: The theme dictionary to modify
+    :type theme_dict: ThemeDict
+    :return: The modified theme dictionary
+    :rtype: ThemeDict
+    """
     if theme_dict["PROGRESS"] == sg.DEFAULT_PROGRESS_BAR_COMPUTE:
         theme_dict = theme_dict.copy()
         if (
@@ -121,21 +160,41 @@ def _get_checkbox_radio_selectcolor(background_color, text_color) -> str:
 
 
 @lru_cache(maxsize=LRU_MAX_SIZE)
-def _default_combo_popdown_cget(attribute: str):
+def _default_combo_popdown_cget(attribute: str) -> str:
+    """Get a combobox popdown attribute using cget.
+
+    Internal use only.
+
+    :param attribute: The attribute to retrieve
+    :type attribute: str
+    :return: The value of the requested attribute
+    :rtype: str
+    """
     DEFAULT_WINDOW.TKroot.tk.call(
         "eval",
-        f"set defaultcombo [ttk::combobox::PopdownWindow {DEFAULT_ELEMENTS['combo'].widget}]",
+        "ttk::combobox .defaultcombo -values [list]; ttk::combobox::LoadImages; set defaultcombo",
     )
     return DEFAULT_WINDOW.TKroot.tk.call("eval", f"$defaultcombo.f.l cget -{attribute}")
 
 
 @lru_cache(maxsize=LRU_MAX_SIZE)
-def _default_combo_listbox_cget(attribute: str):
+def _default_combo_listbox_cget(attribute: str) -> str:
+    """Get a combobox listbox attribute using cget.
+
+    Internal use only.
+
+    :param attribute: The attribute to retrieve
+    :type attribute: str
+    :return: The value of the requested attribute
+    :rtype: str
+    """
     DEFAULT_WINDOW.TKroot.tk.call(
         "eval",
-        f"set defaultcombo [ttk::combobox::PopdownWindow {DEFAULT_ELEMENTS['combo'].widget}]",
+        "ttk::combobox .defaultcombo -values [list]; ttk::combobox::LoadImages; set defaultcombo",
     )
-    return DEFAULT_WINDOW.TKroot.tk.call("eval", f"$defaultcombo.f.l cget -{attribute}")
+    return DEFAULT_WINDOW.TKroot.tk.call(
+        "eval", f"$defaultcombo.popdown.f.l cget -{attribute}"
+    )
 
 
 class Colorizer:
