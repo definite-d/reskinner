@@ -11,7 +11,7 @@ from .sg import sg
 def reskin(
     window: sg.Window,
     new_theme: str,
-    element_filter: Callable[[sg.Element], ...],
+    element_filter: Callable[[sg.Element], bool] = None,
     theme_function: Callable = sg.theme,
     lf_table: Dict[str, ThemeDict] = sg.LOOK_AND_FEEL_TABLE,
     set_future: bool = True,
@@ -56,7 +56,7 @@ def reskin(
 def _reskin(
     colorizer: Colorizer,
     window: sg.Window,
-    element_filter: Callable[[sg.Element], ...],
+    element_filter: Callable[[sg.Element], bool] = None,
     reskin_background: bool = True,
 ):
     # Window level changes
