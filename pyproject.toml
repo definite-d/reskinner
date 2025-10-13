@@ -32,3 +32,9 @@ fsg = [
 
 [[tool.uv.index]]
 url = "https://pysimplegui.net/install"
+
+[dependency-groups]
+dev = [
+    "isort",
+    "ruff",
+]
