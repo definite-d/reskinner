@@ -26,9 +26,6 @@ jobs:
       - name: Install dependencies (dev/test)
         run: uv pip install -e .[dev]
 
-      - name: Run tests
-        run: pytest  # or your test command
-
       - name: Build artifact
         run: uv build
 
@@ -40,6 +37,8 @@ jobs:
 
   publish:
     needs: build
+    environment:
+      name: pypi
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
