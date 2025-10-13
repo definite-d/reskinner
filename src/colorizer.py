@@ -97,6 +97,7 @@ def _run_progressbar_computation(theme_dict: ThemeDict):
     return theme_dict
 
 
+# noinspection PyUnresolvedReferences
 def _get_checkbox_radio_selectcolor(background_color, text_color) -> str:
     # PySimpleGUI's color conversion functions give different results than those of the colour module
     # due to floating point truncation, so I can't use the color module's functionality for everything here.
@@ -141,14 +142,13 @@ class Colorizer:
         self,
         old_theme_dict: ThemeDict,
         new_theme_dict: ThemeDict,
+        interpolation_mode: Literal["hsl", "hue", "rgb"] = "rgb",
         progress: float = 0,
-        styler: Union[Style, None] = None,
-        interpolation_mode: Literal["rgb", "hue", "hsl"] = "rgb",
     ):
         self.old_theme_dict: ThemeDict = _run_progressbar_computation(old_theme_dict)
         self.new_theme_dict: ThemeDict = _run_progressbar_computation(new_theme_dict)
         self.progress: float = progress
-        self.styler: Style = styler if styler else Style()
+        self.styler: Style = Style()
         self.interpolate: InterpolationMethod = INTERPOLATION_MODES[interpolation_mode]
 
     def _color(
