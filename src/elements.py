@@ -1,12 +1,9 @@
 from typing import Union
 from tkinter.ttk import Widget as TTKWidget
 
-from src.colorizer import Colorizer
-from src.constants import (
-    ElementName,
-    ALTER_MENU_ACTIVE_COLORS,
-)
-from src.sg import sg
+from .colorizer import Colorizer
+from .constants import ElementName, ALTER_MENU_ACTIVE_COLORS
+from .sg import sg
 
 
 class ElementReskinner:

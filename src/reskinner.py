@@ -4,8 +4,8 @@ from typing import Callable, Dict, Literal
 from warnings import warn
 
 from .elements import ElementReskinner
-from src.colorizer import Colorizer, ThemeDict
-from src.sg import sg
+from .colorizer import Colorizer, ThemeDict
+from .sg import sg
 
 
 def reskin(
