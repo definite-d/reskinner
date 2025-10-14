@@ -70,7 +70,7 @@ class ElementReskinner:
             ): self._reskin_titlebar_child,
             (
                 (element_name == ElementName.COLUMN)
-                and getattr(element, "TKColFrame", False)
+                and (getattr(element, "TKColFrame", "Not Set") != "Not Set")
             ): self._reskin_scrollable_column,
             (element_name == ElementName.BUTTON): self._reskin_button,
             (element_name == ElementName.BUTTONMENU): self._reskin_buttonmenu,
