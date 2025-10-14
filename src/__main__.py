@@ -48,14 +48,8 @@ def main():
         themes.remove(sg.theme())
         new = rc(themes)
         window["current_theme"].update(new)
-        reskin(
-            window=window,
-            new_theme=new,
-            theme_function=sg.theme,
-            lf_table=sg.LOOK_AND_FEEL_TABLE,
-            duration_in_milliseconds=450,
-            interpolation_mode="hsl",
-        )
+        reskin(window=window, new_theme=new, theme_function=sg.theme, lf_table=sg.LOOK_AND_FEEL_TABLE,
+               interpolation_mode="hsl")
         window.TKroot.after(2000, _reskin_job)
 
     started = False

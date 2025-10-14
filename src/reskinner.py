@@ -24,7 +24,7 @@ def reskin(
     lf_table: Optional[Dict[str, ThemeDict]] = None,
     set_future: bool = True,
     reskin_background: bool = True,
-    duration_in_milliseconds: float = 0,
+    duration: float = 0,
     interpolation_mode: Literal["hsl", "hue", "rgb"] = "rgb",
 ) -> None:
     """Apply a new theme to a PySimpleGUI window with optional animation.
@@ -43,8 +43,8 @@ def reskin(
     :type set_future: bool
     :param reskin_background: If True, reskin the window background
     :type reskin_background: bool
-    :param duration_in_milliseconds: Duration of animation in milliseconds (0 for instant)
-    :type duration_in_milliseconds: float
+    :param duration: Duration of animation in milliseconds (0 for instant)
+    :type duration: float
     :param interpolation_mode: Color interpolation mode ("hsl", "hue", or "rgb")
     :type interpolation_mode: Literal["hsl", "hue", "rgb"]
     :raises ValueError: If the specified theme is not found
@@ -87,14 +87,14 @@ def reskin(
 
     colorizer = Colorizer(old_theme_dict, new_theme_dict, interpolation_mode)
 
-    if duration_in_milliseconds:
+    if duration:
         if (
-            not isinstance(duration_in_milliseconds, (int, float))
-            or duration_in_milliseconds < 0
+            not isinstance(duration, (int, float))
+            or duration < 0
         ):
             raise ValueError("Duration must be a non-negative number")
 
-        delta = timedelta(milliseconds=duration_in_milliseconds)
+        delta = timedelta(milliseconds=duration)
         start = datetime.now()
         end = start + delta
 
