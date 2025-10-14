@@ -88,10 +88,7 @@ def reskin(
     colorizer = Colorizer(old_theme_dict, new_theme_dict, interpolation_mode)
 
     if duration:
-        if (
-            not isinstance(duration, (int, float))
-            or duration < 0
-        ):
+        if not isinstance(duration, (int, float)) or duration < 0:
             raise ValueError("Duration must be a non-negative number")
 
         delta = timedelta(milliseconds=duration)
