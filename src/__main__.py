@@ -7,10 +7,9 @@ def main():
     # % START DEMO % #
     from random import choice as rc
 
-    from reskinner import sg
-
     from .__version__ import __version__
     from .reskinner import reskin
+    from .sg import sg
 
     right_click_menu = [
         "",
