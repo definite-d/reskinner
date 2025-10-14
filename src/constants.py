@@ -42,6 +42,7 @@ class ElementName(StrEnum):
     SLIDER = "slider"
     SPIN = "spin"
     STATUSBAR = "statusbar"
+    TAB = "tab"
     TABGROUP = "tabgroup"
     TABLE = "table"
     TEXT = "text"
