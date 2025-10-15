@@ -172,29 +172,9 @@ def _default_combo_popdown_cget(attribute: str) -> str:
     """
     DEFAULT_WINDOW.TKroot.tk.call(
         "eval",
-        "ttk::combobox .defaultcombo -values [list]; ttk::combobox::LoadImages; set defaultcombo",
+        f"set defaultcombo [ttk::combobox::PopdownWindow {DEFAULT_ELEMENTS['combo'].widget}]",
     )
     return DEFAULT_WINDOW.TKroot.tk.call("eval", f"$defaultcombo.f.l cget -{attribute}")
-
-
-@lru_cache(maxsize=LRU_MAX_SIZE)
-def _default_combo_listbox_cget(attribute: str) -> str:
-    """Get a combobox listbox attribute using cget.
-
-    Internal use only.
-
-    :param attribute: The attribute to retrieve
-    :type attribute: str
-    :return: The value of the requested attribute
-    :rtype: str
-    """
-    DEFAULT_WINDOW.TKroot.tk.call(
-        "eval",
-        "ttk::combobox .defaultcombo -values [list]; ttk::combobox::LoadImages; set defaultcombo",
-    )
-    return DEFAULT_WINDOW.TKroot.tk.call(
-        "eval", f"$defaultcombo.popdown.f.l cget -{attribute}"
-    )
 
 
 class Colorizer:
@@ -352,25 +332,6 @@ class Colorizer:
             lambda attribute: _default_element_cget("menu", attribute),
         )
 
-    def combo_popdown(
-        self,
-        combo: sg.Combo,
-        configuration: ThemeConfiguration,
-    ):
-        combo.widget.tk.call(
-            "eval", f"set popdown [ttk::combobox::PopdownWindow {combo.widget}]"
-        )
-
-        def _configure_combo_popdown(**kwargs):
-            command = "$popdown.f.l configure"
-            for attribute, value in kwargs.items():
-                command += f" -{attribute} {value}"
-            combo.widget.tk.call("eval", command)
-
-        self._configure(
-            configuration, _configure_combo_popdown, _default_combo_popdown_cget
-        )
-
     def optionmenu_menu(
         self,
         optionmenu: sg.OptionMenu,
@@ -463,13 +424,13 @@ class Colorizer:
         )
 
     def combo(self, combo: sg.Combo):
-        # Configuring the listbox of the combo.
+        # Configuring the listbox (popdown) of the combo.
 
         combo.widget.tk.call(
             "eval", f"set popdown [ttk::combobox::PopdownWindow {combo.widget}]"
         )
 
-        def _configure_combo_listbox(**kwargs):
+        def _configure_combo_popdown(**kwargs):
             for attribute, value in kwargs.items():
                 combo.widget.tk.call(
                     "eval", f"$popdown.f.l configure -{attribute} {value}"
@@ -482,9 +443,10 @@ class Colorizer:
                 "selectforeground": "INPUT",
                 "selectbackground": "TEXT_INPUT",
             },
-            _configure_combo_listbox,
-            _default_combo_listbox_cget,
+            _configure_combo_popdown,
+            _default_combo_popdown_cget,
         )
+
         # Configuring the combo itself.
         style_name = combo.widget["style"]
         self.style(
