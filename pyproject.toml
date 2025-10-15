@@ -30,6 +30,9 @@ fsg = [
     "FreeSimpleGUI>=5.0.0",
 ]
 
+[tool.uv]
+package = true
+
 [[tool.uv.index]]
 name = "pysimplegui"
 url = "https://pysimplegui.net/install"
@@ -37,3 +40,8 @@ explicit = true
 
 [tool.uv.sources]
 reskinner = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "reskinner[fsg,psg]",
+]
