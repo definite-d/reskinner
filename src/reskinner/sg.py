@@ -10,6 +10,7 @@ try:
 except ImportError:
     try:
         import FreeSimpleGUI as sg
+
         SG_LIB = "fsg"
     except ImportError:
         raise EnvironmentError(prompt)
