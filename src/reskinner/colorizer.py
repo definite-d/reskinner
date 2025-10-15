@@ -494,7 +494,7 @@ class Colorizer:
                 "background": "BACKGROUND",
                 "foreground": "TEXT",
                 "activebackground": "BACKGROUND",
-                # "text": "TEXT",
+                "activeforeground": "TEXT"
             },
         )
 
