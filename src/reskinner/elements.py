@@ -164,6 +164,8 @@ class ElementReskinner:
             {
                 "background": ("BUTTON", 1),
                 "foreground": ("BUTTON", 0),
+                "activebackground": ("BUTTON", 0),
+                "activeforeground": ("BUTTON", 1),
             },
         )
         if getattr(element, "TKMenu", False):
