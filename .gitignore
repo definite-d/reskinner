@@ -5,3 +5,5 @@
 .mypy_cache
 .*__pycache__.*/
 uv.lock
+
+*.egg-info/
