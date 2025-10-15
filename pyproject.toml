@@ -31,4 +31,9 @@ fsg = [
 ]
 
 [[tool.uv.index]]
+name = "pysimplegui"
 url = "https://pysimplegui.net/install"
+explicit = true
+
+[tool.uv.sources]
+reskinner = { workspace = true }
