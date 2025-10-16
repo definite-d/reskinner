@@ -7,41 +7,46 @@ version = "4.0.0"
 authors = [{ name = "Divine U. Afam-Ifediogor" }]
 license = { file = "LICENSE" }
 classifiers = [
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
-keywords = ["PySimpleGUI", "reskin", "realtime", "theme", "color"]
-dependencies = [
-    "colour>=0.1.5",
-    'StrEnum; python_version < "3.11"',
+keywords = [
+  "PySimpleGUI",
+  "FreeSimpleGUI",
+  "reskin",
+  "realtime",
+  "theme",
+  "color",
 ]
+dependencies = ["colour>=0.1.5", 'StrEnum; python_version < "3.11"']
 
 [project.urls]
 "Homepage" = "https://github.com/definite-d/psg_reskinner/"
 "Bug Tracker" = "https://github.com/definite-d/psg_reskinner/issues/"
 
 [project.optional-dependencies]
-psg = [
-    "PySimpleGUI>=4.60.3.96",
-]
-fsg = [
-    "FreeSimpleGUI>=5.0.0",
-]
+psg = ["PySimpleGUI>=4.60.3.96"]
+fsg = ["FreeSimpleGUI>=5.0.0"]
 
 [tool.uv]
 package = true
+conflicts = [[{ extra = "fsg" }, { extra = "psg" }]]
+index = [
+  { name = "pysimplegui", url = "https://pysimplegui.net/install", explicit = true },
+]
 
-[[tool.uv.index]]
-name = "pysimplegui"
-url = "https://pysimplegui.net/install"
-explicit = true
 
 [tool.uv.sources]
 reskinner = { workspace = true }
 
-[dependency-groups]
-dev = [
-    "reskinner[fsg,psg]",
-]
+[build-system]
+requires = ["uv_build>=0.9.3,<0.10.0"]
+build-backend = "uv_build"
