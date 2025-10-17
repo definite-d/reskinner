@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: Build and Publish
     environment:
       name: pypi
     runs-on: ubuntu-latest
@@ -25,7 +26,7 @@ jobs:
           python-version: "3.x"
 
       - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        uses: astral-sh/setup-uv@v3
 
       - name: Build artifact
         run: uv build

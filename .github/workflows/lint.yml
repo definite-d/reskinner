@@ -1,0 +1,20 @@
+name: Lint
+
+on:
+  push:
+    - main
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - name: Ruff lint
+        run: uvx ruff check .
+      - name: Sort imports
+        run: uvx isort . 
+      - name: Ruff format
+        run: uvx ruff format --diff .
+        
