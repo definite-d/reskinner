@@ -30,6 +30,7 @@ keywords = [
   "realtime",
   "theme",
   "color",
+  "gui",
 ]
 dependencies = ["colour>=0.1.5", 'StrEnum; python_version < "3.11"']
 
