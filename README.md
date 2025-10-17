@@ -1,13 +1,14 @@
-# Reskinner: Dynamic Theme Manager for PySimpleGUI
+# Reskinner: Dynamic Theme Switching for PySimpleGUI
 
-[![PyPI Version](https://img.shields.io/pypi/v/reskinner?style=flat-square)](https://pypi.org/project/reskinner/)
-[![Python Versions](https://img.shields.io/pypi/pyversions/reskinner?style=flat-square&logo=python)](https://pypi.org/project/reskinner/)
-[![License](https://img.shields.io/pypi/l/reskinner?style=flat-square)](https://opensource.org/licenses/MIT)
+[![PyPI Version](https://img.shields.io/pypi/v/reskinner?style=flat)](https://pypi.org/project/reskinner/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/reskinner?style=flat&logo=python)](https://pypi.org/project/reskinner/)
+[![License](https://img.shields.io/pypi/l/reskinner?style=flat)](https://opensource.org/licenses/MIT)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Downloads](https://static.pepy.tech/personalized-badge/psg-reskinner?period=total&units=international_system&left_color=grey&right_color=yellowgreen&left_text=downloads)](https://pepy.tech/project/psg-reskinner)
 [![GitHub issues](https://img.shields.io/github/issues/definite-d/psg_reskinner)](https://github.com/definite-d/psg_reskinner/issues)
 ![GitHub forks](https://img.shields.io/github/forks/definite-d/psg_reskinner?logo=github&style=flat)
-[![GitHub stars](https://img.shields.io/github/stars/definite-d/psg_reskinner)](https://github.com/definite-d/psg_reskinner/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/definite-d/psg_reskinner?logo=github&style=flat)](https://github.com/definite-d/psg_reskinner/stargazers)
 
 
 ### V4 Release
@@ -159,7 +160,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- The PySimpleGUI and FreeSimpleGUI communities
+- The [PySimpleGUI](https://github.com/pysimplegui/pysimplegui) and [FreeSimpleGUI](https://github.com/spyoungtech/FreeSimpleGUI) communities
 - All contributors who have helped improve Reskinner
 
 ## FAQs
