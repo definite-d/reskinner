@@ -11,7 +11,7 @@ from colour import Color  # type: ignore[import-untyped]
 
 from .constants import LRU_MAX_SIZE, ElementName, ScrollbarColorKey
 from .default_window import DEFAULT_ELEMENTS, DEFAULT_WINDOW
-from .easing import ease, EasingName
+from .easing import EasingName, ease
 from .interpolation import INTERPOLATION_MODES, InterpolationMethod
 from .sg import sg
 

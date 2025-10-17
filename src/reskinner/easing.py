@@ -1,5 +1,5 @@
-from typing import Optional, Literal, Union, Callable, Dict
-from math import sin, cos, pi, sqrt
+from math import cos, pi, sin, sqrt
+from typing import Callable, Dict, Literal, Optional, Union
 
 c1 = 1.70158
 c2 = c1 * 1.525

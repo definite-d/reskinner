@@ -1,7 +1,8 @@
-import sys
 import importlib.util
+import sys
 from pathlib import Path
 from re import compile
+
 from reskinner import sg
 
 # Match files ending with '.py' but not starting with underscore
