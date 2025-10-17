@@ -1,55 +1,88 @@
-[build-system]
-requires = ["setuptools>=61.0.0", "wheel", "bumpver"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "psg_reskinner"
+name = "reskinner"
+requires-python = ">=3.8"
 description = "Instantaneous theme changing for PySimpleGUI windows."
-version = "3.1.0"
-readme = "./res/DESCRIPTION.md"
-authors = [{ name = "Divine U. Afam-Ifediogor", email = "divineafam@gmail.com" }]
+version = "4.0.0"
+authors = [{ name = "Divine U. Afam-Ifediogor" }]
 license = { file = "LICENSE" }
+readme = "./res/DESCRIPTION.md"
 classifiers = [
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
+  "Development Status :: 6 - Mature",
+  "Framework :: PySimpleGUI",
+  "Framework :: PySimpleGUI :: 4",
+  "Framework :: PySimpleGUI :: 5",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
-keywords = ["PySimpleGUI", "reskin", "realtime", "theme", "color"]
-dependencies = [
-    "colour>=0.1.5",
-    "PySimpleGUI>=4.60.3.96"
+keywords = [
+  "PySimpleGUI",
+  "FreeSimpleGUI",
+  "reskin",
+  "realtime",
+  "theme",
+  "color",
+  "gui",
 ]
-requires-python = ">=3.7"
+dependencies = ["colour>=0.1.5", 'StrEnum; python_version < "3.11"']
 
 [project.urls]
 "Homepage" = "https://github.com/definite-d/psg_reskinner/"
 "Bug Tracker" = "https://github.com/definite-d/psg_reskinner/issues/"
 
-[tool.setuptools]
-packages = ["psg_reskinner"]
+[project.optional-dependencies]
+psg = [
+  "PySimpleGUI>=4.60.3.96",
+]
+fsg = [
+  "FreeSimpleGUI>=5.0.0",
+]
+
+[tool.uv]
+package = true
+conflicts = [[{ extra = "fsg" }, { extra = "psg" }]]
+index = [
+  { name = "pysimplegui", url = "https://pysimplegui.net/install", explicit = true },
+]
+
+
+[tool.uv.sources]
+reskinner = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.9.3,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "bumpver>=2025.1131",
+    "ruff>=0.14.1",
+    "taplo>=0.9.3",
+]
 
 [tool.bumpver]
-current_version = "3.1.0"
+current_version = "4.0.0"
 version_pattern = "MAJOR.MINOR.PATCH"
-commit_message = "New {new_version} update from {old_version}"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ""
+post_commit_hook = ""
 commit = true
 tag = true
 push = true
 
 [tool.bumpver.file_patterns]
 "pyproject.toml" = [
-    'current_version = "{version}"',
-    'version = "{version}"',
+  'current_version = "{version}"',
+  'version = "{version}"',
 ]
-"./README.md" = [
-    "Version {version}",
-]
-"./res/README_DRY.md" = [
-    "Version {version}",
-]
-"psg_reskinner/version.py" = [
-    '__version__: str = "{version}"'
-]
-
-
+"README.md" = ["{version}", "{pep440_version}"]
