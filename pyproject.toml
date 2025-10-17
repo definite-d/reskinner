@@ -57,11 +57,6 @@ index = [
 [tool.uv.sources]
 reskinner = { workspace = true }
 
-[tool.uv.workspace]
-members = [
-    ".",
-]
-
 [build-system]
 requires = ["uv_build>=0.9.3,<0.10.0"]
 build-backend = "uv_build"
