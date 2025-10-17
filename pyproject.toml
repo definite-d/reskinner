@@ -39,8 +39,12 @@ dependencies = ["colour>=0.1.5", 'StrEnum; python_version < "3.11"']
 "Bug Tracker" = "https://github.com/definite-d/psg_reskinner/issues/"
 
 [project.optional-dependencies]
-psg = ["PySimpleGUI>=4.60.3.96"]
-fsg = ["FreeSimpleGUI>=5.0.0"]
+psg = [
+  "PySimpleGUI>=4.60.3.96",
+]
+fsg = [
+  "FreeSimpleGUI>=5.0.0",
+]
 
 [tool.uv]
 package = true
@@ -52,6 +56,11 @@ index = [
 
 [tool.uv.sources]
 reskinner = { workspace = true }
+
+[tool.uv.workspace]
+members = [
+    ".",
+]
 
 [build-system]
 requires = ["uv_build>=0.9.3,<0.10.0"]
