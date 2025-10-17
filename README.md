@@ -81,7 +81,7 @@ current_theme = sg.theme()
 
 def change_theme():
     new_theme = choice([t for t in themes if t != current_theme])
-    reskin(window=window, new_theme=new_theme, theme_function=sg.theme)
+    reskin(window, new_theme)
     return new_theme
 
 while True:
@@ -146,6 +146,47 @@ reskin(
 )
 ```
 
+### Using a named easing function
+
+This uses one of Reskinner’s built-in easing functions (based on [https://easing.net](https://easing.net)) for a smooth, natural animation.
+
+```python
+from reskinner import reskin
+import PySimpleGUI as sg
+
+# Apply a theme with animation and built-in easing
+reskin(
+    window=window,
+    new_theme="DarkBlue",
+    duration=1000,  # milliseconds
+    interpolation_mode="rgb",
+    easing_function="ease_in_out_sine",
+)
+```
+
+### Using a custom easing function
+
+Any callable accepting a `float` between `0` and `1`, and returning a `float` in the same range, is valid as a custom easing function. In this example, we use the [golden ratio](https://en.wikipedia.org/wiki/Golden_ratio) as our easing function
+
+```python
+from math import pow
+from reskinner import reskin
+import PySimpleGUI as sg
+
+
+def golden_ease_out(t: float) -> float:
+    phi = (1 + 5 ** 0.5) / 2  # ≈ 1.618
+    return 1 - pow(1 - t, phi)
+
+# Apply a theme with golden-ratio-based easing
+reskin(
+    window=window,
+    new_theme="DarkGreen5",
+    duration=1000,
+    interpolation_mode="rgb",
+    easing_function=golden_ease_out,
+)
+```
 
 ## Compatibility
 
