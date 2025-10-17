@@ -7,7 +7,12 @@ version = "4.0.0"
 authors = [{ name = "Divine U. Afam-Ifediogor" }]
 license = { file = "LICENSE" }
 classifiers = [
+  "Development Status :: 6 - Mature",
+  "Framework :: PySimpleGUI",
+  "Framework :: PySimpleGUI :: 4",
+  "Framework :: PySimpleGUI :: 5",
   "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.8",
