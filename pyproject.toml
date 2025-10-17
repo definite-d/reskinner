@@ -58,7 +58,11 @@ requires = ["uv_build>=0.9.3,<0.10.0"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = ["bumpver>=2025.1131", "ruff>=0.14.1", "taplo>=0.9.3"]
+dev = [
+    "bumpver>=2025.1131",
+    "ruff>=0.14.1",
+    "taplo>=0.9.3",
+]
 
 [tool.bumpver]
 current_version = "4.0.0"
