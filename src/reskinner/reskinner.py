@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from tkinter import TclError
-from typing import Callable, Dict, Literal, Optional, TypeVar
+from typing import Callable, Dict, Literal, Optional, TypeVar, Union
 from warnings import warn
 
 from .colorizer import Colorizer, ThemeDict
+from .easing import EasingName
 from .elements import ElementReskinner
 from .sg import sg
 
@@ -26,6 +27,7 @@ def reskin(
     reskin_background: bool = True,
     duration: float = 0,
     interpolation_mode: Literal["hsl", "hue", "rgb"] = "rgb",
+    easing_function: Optional[Union[EasingName, Callable[[float], float]]] = None,
 ) -> None:
     """Apply a new theme to a PySimpleGUI window with optional animation.
 
@@ -85,7 +87,9 @@ def reskin(
     if (old_theme == new_theme) and (new_theme_dict == old_theme_dict):
         return
 
-    colorizer = Colorizer(old_theme_dict, new_theme_dict, interpolation_mode)
+    colorizer = Colorizer(
+        old_theme_dict, new_theme_dict, interpolation_mode, easing_function
+    )
 
     if duration:
         if not isinstance(duration, (int, float)) or duration < 0:

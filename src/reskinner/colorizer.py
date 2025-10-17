@@ -5,12 +5,13 @@ from tkinter import Frame as TKFrame
 from tkinter import Menu as TKMenu
 from tkinter import Widget
 from tkinter.ttk import Style
-from typing import Any, Callable, Dict, Literal, Tuple, TypeVar, Union
+from typing import Any, Callable, Dict, Literal, Optional, Tuple, TypeVar, Union
 
 from colour import Color  # type: ignore[import-untyped]
 
 from .constants import LRU_MAX_SIZE, ElementName, ScrollbarColorKey
 from .default_window import DEFAULT_ELEMENTS, DEFAULT_WINDOW
+from .easing import ease, EasingName
 from .interpolation import INTERPOLATION_MODES, InterpolationMethod
 from .sg import sg
 
@@ -183,6 +184,7 @@ class Colorizer:
         old_theme_dict: ThemeDict,
         new_theme_dict: ThemeDict,
         interpolation_mode: Literal["hsl", "hue", "rgb"] = "rgb",
+        easing_function: Optional[Union[EasingName, Callable[[float], float]]] = None,
         progress: float = 0,
     ):
         self.old_theme_dict: ThemeDict = _run_progressbar_computation(old_theme_dict)
@@ -190,6 +192,7 @@ class Colorizer:
         self.progress: float = progress
         self.styler: Style = Style()
         self.interpolate: InterpolationMethod = INTERPOLATION_MODES[interpolation_mode]
+        self.easing_function = easing_function
 
     def _color(
         self,
@@ -213,7 +216,9 @@ class Colorizer:
         except ValueError:
             raise ValueError("The referenced theme_dict value is not a valid color.")
 
-        return self.interpolate(start, end, self.progress).get_hex_l()
+        return self.interpolate(
+            start, end, ease(self.progress, self.easing_function)
+        ).get_hex_l()
 
     def _configure(
         self,
