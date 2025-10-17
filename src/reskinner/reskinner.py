@@ -29,7 +29,12 @@ def reskin(
     interpolation_mode: Literal["hsl", "hue", "rgb"] = "rgb",
     easing_function: Optional[Union[EasingName, Callable[[float], float]]] = None,
 ) -> None:
-    """Apply a new theme to a PySimpleGUI window with optional animation.
+    """Apply a new theme to a PySimpleGUI or FreeSimpleGUI window with optional animation.
+
+    This function enables dynamic theme switching for GUI windows built with
+    either PySimpleGUI or FreeSimpleGUI, without the need to recreate
+    or re-instantiate the window or its elements. It optionally supports smooth
+    animated transitions using RGB, HSL, or hue-based color interpolation.
 
     :param window: The PySimpleGUI window to reskin
     :type window: sg.Window
@@ -49,6 +54,9 @@ def reskin(
     :type duration: float
     :param interpolation_mode: Color interpolation mode ("hsl", "hue", or "rgb")
     :type interpolation_mode: Literal["hsl", "hue", "rgb"]
+    :param easing_function: Optional easing function or name used to shape the animation curve.
+    :type easing_function: Optional[Union[EasingName, Callable[[float], float]]]
+
     :raises ValueError: If the specified theme is not found
     :raises TclError: For Tkinter-related errors
     :raises RuntimeError: If theme reskinning initialization fails
@@ -133,7 +141,7 @@ def _reskin(
     element_filter: Optional[ElementFilter] = None,
     reskin_background: bool = True,
 ) -> None:
-    """Handle the actual reskinning of window elements.
+    """Handles the actual reskinning of window elements.
 
     :param colorizer: Colorizer instance for handling color transformations
     :type colorizer: Colorizer
