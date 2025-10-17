@@ -10,6 +10,9 @@
 ![GitHub forks](https://img.shields.io/github/forks/definite-d/psg_reskinner?logo=github&style=flat)
 [![GitHub stars](https://img.shields.io/github/stars/definite-d/psg_reskinner?logo=github&style=flat)](https://github.com/definite-d/psg_reskinner/stargazers)
 
+<p align="center">
+  <img src="https://github.com/definite-d/psg_reskinner/blob/main/res/demo.gif" alt="Reskinner Demo">
+</p>
 
 ### V4 Release
 With the release of Version 4.0.0, the project is now officially known as "Reskinner". This is a re-write, focusing on 
@@ -22,10 +25,6 @@ improvements to the structure and API of the project.
 - The API for `reskin` has been improved to require only 2 parameters; the window, and the desired theme.
 - The project's minimum supported Python version is now 3.8.
 - Mentions of `HSV` interpolation in the code have been corrected; it's `HSL`.
-
-<p align="center">
-  <img src="https://github.com/definite-d/psg_reskinner/blob/main/res/demo.gif" alt="Reskinner Demo">
-</p>
 
 Reskinner is a powerful library for PySimpleGUI and FreeSimpleGUI, enabling dynamic theme switching at runtime without window recreation. It provides a seamless way to update your application's look and feel on the fly.
 
