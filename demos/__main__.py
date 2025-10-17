@@ -8,6 +8,7 @@ from reskinner import sg
 PY_PATTERN = compile(r"^(?P<name>[^_]{2}.*)\.py$")
 DEFAULT_ENTRY_PROMPT = "Select a demo..."
 
+
 def python_file_filter(f):
     if not f.is_file():
         return False
