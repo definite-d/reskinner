@@ -1,24 +1,26 @@
-# Reskinner: Dynamic Theme Switching for PySimpleGUI
+# Reskinner: Dynamic Theme Switching for PySimpleGUI and FreeSimpleGUI
 
 [![PyPI Version](https://img.shields.io/pypi/v/reskinner?style=flat)](https://pypi.org/project/reskinner/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/reskinner?style=flat&logo=python)](https://pypi.org/project/reskinner/)
 [![License](https://img.shields.io/pypi/l/reskinner?style=flat)](https://opensource.org/licenses/MIT)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Downloads](https://static.pepy.tech/personalized-badge/psg-reskinner?period=total&units=international_system&left_color=grey&right_color=yellowgreen&left_text=downloads)](https://pepy.tech/project/psg-reskinner)
-[![GitHub issues](https://img.shields.io/github/issues/definite-d/psg_reskinner)](https://github.com/definite-d/psg_reskinner/issues)
-![GitHub forks](https://img.shields.io/github/forks/definite-d/psg_reskinner?logo=github&style=flat)
-[![GitHub stars](https://img.shields.io/github/stars/definite-d/psg_reskinner?logo=github&style=flat)](https://github.com/definite-d/psg_reskinner/stargazers)
+[![Downloads](https://static.pepy.tech/personalized-badge/reskinner?period=total&units=international_system&left_color=grey&right_color=yellowgreen&left_text=downloads)](https://pepy.tech/project/reskinner)
+[![GitHub issues](https://img.shields.io/github/issues/definite-d/reskinner)](https://github.com/definite-d/psg_reskinner/issues)
+![GitHub forks](https://img.shields.io/github/forks/definite-d/reskinner?logo=github&style=flat)
+[![GitHub stars](https://img.shields.io/github/stars/definite-d/reskinner?logo=github&style=flat)](https://github.com/definite-d/psg_reskinner/stargazers)
 
 <p align="center">
   <img src="https://github.com/definite-d/psg_reskinner/blob/main/res/demo.gif" alt="Reskinner Demo">
 </p>
 
 ### V4 Release
-With the release of Version 4.0.0, the project is now officially known as "Reskinner". This is a re-write, focusing on 
+
+With the release of Version 4.0.0, the project is now officially known as "Reskinner". This is a re-write, focusing on
 improvements to the structure and API of the project.
 
 #### Biggest changes
+
 - Full support for [FreeSimpleGUI](https://github.com/spyoungtech/FreeSimpleGUI) is here. Thanks to [@deajan](https://github.com/deajan) for the contribution and bringing it to my notice.
 - The entire project has been rewritten from scratch for better maintainability, extensibility, and performance.
 - The `animated_reskin` function is no more... because the `reskin` function itself has animation parameters baked in now.
@@ -86,10 +88,10 @@ def change_theme():
 
 while True:
     event, values = window.read()
-    
+
     if event in (sg.WIN_CLOSED, 'Exit'):
         break
-        
+
     if event == "Change Theme":
         current_theme = change_theme()
 
@@ -101,6 +103,7 @@ window.close()
 ### Core Function
 
 #### `reskin`
+
 ```python
 from reskinner import reskin
 import PySimpleGUI as sg
@@ -191,7 +194,7 @@ reskin(
 ## Compatibility
 
 - Python 3.8+
-- PySimpleGUI 4.60.0+ or FreeSimpleGUI 5.0.0+ *(Tkinter variant __only__; Reskinner doesn't support \*Qt, \*Wx, or \*Web variants)*
+- PySimpleGUI 4.60.0+ or FreeSimpleGUI 5.0.0+ _(Tkinter variant **only**; Reskinner doesn't support \*Qt, \*Wx, or \*Web variants)_
 - Tkinter (included with Python)
 
 ## License
@@ -204,6 +207,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - All contributors who have helped improve Reskinner
 
 ## FAQs
+
 ### How does it work?
 
 Reskinner runs through each element in a window, then by relying on the `element.widget`
