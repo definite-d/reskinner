@@ -15,7 +15,3 @@ jobs:
       - uses: astral-sh/setup-uv@v3
       - name: Ruff lint
         run: uv run ruff check .
-      - name: Sort imports
-        run: uv run isort . 
-      - name: Ruff format
-        run: uv run ruff format .
