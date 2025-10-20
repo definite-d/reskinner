@@ -2,7 +2,9 @@ name: Lint
 
 on:
   push:
-    - main
+    branches:
+      - main
+      - dev
 
 jobs:
   lint:
