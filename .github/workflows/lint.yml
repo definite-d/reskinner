@@ -18,5 +18,4 @@ jobs:
       - name: Sort imports
         run: uv run isort . 
       - name: Ruff format
-        run: uv run ruff format --diff .
-        
+        run: uv run ruff format .
