@@ -1,7 +1,7 @@
 [project]
 name = "reskinner"
 requires-python = ">=3.8"
-description = "Instantaneous theme changing for PySimpleGUI windows."
+description = "Instantaneous theme changing for PySimpleGUI and FreeSimpleGUI windows."
 version = "4.0.0"
 authors = [{ name = "Divine U. Afam-Ifediogor" }]
 license = { file = "LICENSE" }
