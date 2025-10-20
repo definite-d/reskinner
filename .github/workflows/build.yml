@@ -86,5 +86,5 @@ jobs:
         with:
           tag_name: ${{ steps.get_version.outputs.VERSION }}
           files: dist/*
-          name: Release ${{ steps.get_version.outputs.VERSION }}
+          name: ${{ steps.get_version.outputs.VERSION }} Release.
           generate_release_notes: true
