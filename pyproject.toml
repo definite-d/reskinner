@@ -49,9 +49,17 @@ fsg = [
 [tool.uv]
 package = true
 conflicts = [[{ extra = "fsg" }, { extra = "psg" }]]
-index = [
-  { name = "pysimplegui", url = "https://pysimplegui.net/install", explicit = true },
-]
+
+[[tool.uv.index]]
+name = "pysimplegui"
+url = "https://pysimplegui.net/install"
+explicit = true
+
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true
 
 
 [tool.uv.sources]
@@ -82,8 +90,5 @@ tag = true
 push = true
 
 [tool.bumpver.file_patterns]
-"pyproject.toml" = [
-  'current_version = "{version}"',
-  'version = "{version}"',
-]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "README.md" = ["{version}", "{pep440_version}"]

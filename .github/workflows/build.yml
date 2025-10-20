@@ -3,7 +3,7 @@ name: PyPi and GitHub Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
   workflow_dispatch:
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
         run: uv build
 
       - name: Publish to PyPI
-        run: uv publish --token ${{ secrets.PYPI_TOKEN }}
+        run: uv publish --index testpypi
 
       - name: Get tag version
         id: get_version
