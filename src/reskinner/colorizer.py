@@ -5,7 +5,11 @@ from tkinter import Frame as TKFrame
 from tkinter import Menu as TKMenu
 from tkinter import Widget
 from tkinter.ttk import Style
-from typing import Any, Callable, Dict, Literal, Optional, Tuple, TypeVar, Union
+from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 from colour import Color  # type: ignore[import-untyped]
 

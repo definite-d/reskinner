@@ -1,5 +1,9 @@
 from math import cos, pi, sin, sqrt
-from typing import Callable, Dict, Literal, Optional, Union
+from typing import Callable, Dict, Optional, Union
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 c1 = 1.70158
 c2 = c1 * 1.525

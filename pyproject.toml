@@ -1,6 +1,6 @@
 [project]
 name = "reskinner"
-requires-python = ">=3.8"
+requires-python = ">=3.7"
 description = "Instantaneous theme changing for PySimpleGUI and FreeSimpleGUI windows."
 version = "4.0.0"
 authors = [{ name = "Divine U. Afam-Ifediogor" }]
@@ -15,6 +15,7 @@ classifiers = [
   "Natural Language :: English",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
@@ -32,7 +33,12 @@ keywords = [
   "color",
   "gui",
 ]
-dependencies = ["colour>=0.1.5", 'StrEnum; python_version < "3.11"']
+dependencies = [
+    "colour>=0.1.5",
+    'StrEnum; python_version < "3.11"',
+    'importlib-metadata; python_version < "3.8"',
+    'typing-extensions; python_version < "3.8"',
+]
 
 [project.urls]
 "Homepage" = "https://github.com/definite-d/psg_reskinner/"
@@ -71,10 +77,9 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
-    "bumpver>=2025.1131",
-    "isort>=5.13.2",
-    "ruff>=0.14.1",
-    "taplo>=0.9.3",
+    "bumpver",
+    "isort",
+    "ruff",
 ]
 
 [tool.bumpver]

@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from tkinter import TclError
-from typing import Callable, Dict, Literal, Optional, TypeVar, Union
+from typing import Callable, Dict, Optional, TypeVar, Union
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 from warnings import warn
 
 from .colorizer import Colorizer, ThemeDict
