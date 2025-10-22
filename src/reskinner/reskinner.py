@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from tkinter import TclError
 from typing import Callable, Dict, Optional, TypeVar, Union
-from ._compat import Literal
 from warnings import warn
 
+from ._compat import Literal
 from .colorizer import Colorizer, ThemeDict
 from .easing import EasingName
 from .elements import ElementReskinner
@@ -122,7 +122,7 @@ def reskin(
                         warn("Window was closed during reskinning")
                         return
                     raise  # Re-raise other TclErrors
-                
+
                 if window.TKroot:
                     window.TKroot.update_idletasks()
 

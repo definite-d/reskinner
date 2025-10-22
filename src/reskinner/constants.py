@@ -1,7 +1,6 @@
 from enum import Enum
 
 from ._compat import StrEnum
-
 from .sg import sg
 
 ALTER_MENU_ACTIVE_COLORS = True

@@ -6,10 +6,10 @@ from tkinter import Menu as TKMenu
 from tkinter import Widget
 from tkinter.ttk import Style
 from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
-from ._compat import Literal
 
 from colour import Color  # type: ignore[import-untyped]
 
+from ._compat import Literal
 from .constants import LRU_MAX_SIZE, ElementName, ScrollbarColorKey
 from .default_window import DEFAULT_ELEMENTS, DEFAULT_WINDOW
 from .easing import EasingName, ease
@@ -311,8 +311,12 @@ class Colorizer:
         window: sg.Window,
         configuration: ThemeConfiguration,
     ):
-        if window.TKroot:        
-            self._configure(configuration, window.TKroot.configure, _default_window_cget)
+        if window.TKroot:
+            self._configure(
+                configuration,
+                window.TKroot.configure,
+                _default_window_cget,
+            )
 
     # Specific
 

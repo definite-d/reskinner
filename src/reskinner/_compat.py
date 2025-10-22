@@ -3,11 +3,11 @@ import sys
 v = sys.version_info
 
 if v >= (3, 8):
-    from typing import Literal, Protocol
     from importlib.metadata import PackageNotFoundError, version
+    from typing import Literal, Protocol
 else:
-    from typing_extensions import Literal, Protocol
     from importlib_metadata import PackageNotFoundError, version
+    from typing_extensions import Literal, Protocol
 
 if v >= (3, 11):
     from enum import StrEnum

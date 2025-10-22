@@ -1,5 +1,6 @@
 from math import cos, pi, sin, sqrt
 from typing import Callable, Dict, Optional, Union
+
 from ._compat import Literal
 
 c1 = 1.70158
@@ -154,7 +155,7 @@ def ease(
         easing_func = EASING_FUNCTIONS.get(function)
         if easing_func is None:
             raise ValueError(f"Unknown easing function: {function}")
-    
+
     else:
         raise ValueError("Invalid value passed for easing function")
 

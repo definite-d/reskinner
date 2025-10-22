@@ -1,7 +1,8 @@
 from typing import Dict
-from ._compat import Protocol
 
 from colour import Color
+
+from ._compat import Protocol
 
 
 def _clamp(v: float):
