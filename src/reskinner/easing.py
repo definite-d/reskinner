@@ -147,11 +147,15 @@ def ease(
     if function is None:
         return progress
 
-    if callable(function):
+    elif callable(function):
         return function(progress)
 
-    easing_func = EASING_FUNCTIONS.get(function)
-    if easing_func is None:
-        raise ValueError(f"Unknown easing function: {function}")
+    elif isinstance(function, EasingName):
+        easing_func = EASING_FUNCTIONS.get(function)
+        if easing_func is None:
+            raise ValueError(f"Unknown easing function: {function}")
+    
+    else:
+        raise ValueError("Invalid value passed for easing function")
 
     return easing_func(progress)
