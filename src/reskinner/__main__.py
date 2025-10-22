@@ -56,7 +56,8 @@ def main():
             duration=450,
             interpolation_mode="hsl",
         )
-        window.TKroot.after(2000, _reskin_job)
+        if window.TKroot:
+            window.TKroot.after(2000, _reskin_job)
 
     started = False
 
