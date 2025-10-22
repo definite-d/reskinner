@@ -510,7 +510,7 @@ class Colorizer:
     def table_or_tree(self, element: Union[sg.Table, sg.Tree]):
         style_name = element.widget["style"]
         element_name = ElementName.from_element(element)
-        default_style = _default_element_cget(element_name, "style")
+        default_style = element.widget.winfo_class()
         self.style(
             style_name,
             {
