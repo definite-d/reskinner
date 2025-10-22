@@ -25,7 +25,7 @@ improvements to the structure and API of the project.
 - The entire project has been rewritten from scratch for better maintainability, extensibility, and performance.
 - The `animated_reskin` function is no more... because the `reskin` function itself has animation parameters baked in now.
 - The API for `reskin` has been improved to require only 2 parameters; the window, and the desired theme.
-- The project's minimum supported Python version is now 3.8.
+- ~~The project's minimum supported Python version is now 3.8.~~ Python 3.7 support is back from 4.0.1
 - Mentions of `HSV` interpolation in the code have been corrected; it's `HSL`.
 
 Reskinner is a powerful library for PySimpleGUI and FreeSimpleGUI, enabling dynamic theme switching at runtime without window recreation. It provides a seamless way to update your application's look and feel on the fly.

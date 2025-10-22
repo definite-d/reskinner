@@ -2,7 +2,7 @@
 name = "reskinner"
 requires-python = ">=3.7"
 description = "Instantaneous theme changing for PySimpleGUI and FreeSimpleGUI windows."
-version = "4.0.0"
+version = "4.0.1"
 authors = [{ name = "Divine U. Afam-Ifediogor" }]
 license = { file = "LICENSE" }
 readme = "./res/DESCRIPTION.md"
@@ -83,9 +83,9 @@ dev = [
 ]
 
 [tool.bumpver]
-current_version = "4.0.0"
+current_version = "4.0.1"
 version_pattern = "MAJOR.MINOR.PATCH"
-commit_message = "bump version {old_version} -> {new_version}"
+commit_message = "bump version v{old_version} -> v{new_version}"
 tag_message = "{new_version}"
 tag_scope = "default"
 pre_commit_hook = ""
@@ -96,4 +96,3 @@ push = true
 
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
-"README.md" = ["{version}", "{pep440_version}"]
