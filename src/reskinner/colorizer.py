@@ -385,7 +385,7 @@ class Colorizer:
             default_style,
         )
 
-    def recurse_menu(self, tkmenu: Union[TKMenu, Widget]):
+    def recurse_menu(self, tkmenu: TKMenu):
         """
         Internal use only.
 
@@ -397,12 +397,13 @@ class Colorizer:
         :param tkmenu: The Tkinter menu object.
         :return: None
         """
+        end_menu_index = tkmenu.index("end")
 
         # This fixes issue #8. Thank you, @richnanney for reporting!
-        if tkmenu.index("end") is None:
+        if end_menu_index is None:
             return
 
-        for index in range(0, tkmenu.index("end") + 1):
+        for index in range(0, end_menu_index + 1):
             self.menu_entry(
                 tkmenu,
                 index,
