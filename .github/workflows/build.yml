@@ -1,4 +1,4 @@
-name: PyPi and GitHub Release
+name: Build, PyPi and GitHub Release
 
 on:
   push:
