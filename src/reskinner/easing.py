@@ -1,9 +1,7 @@
 from math import cos, pi, sin, sqrt
 from typing import Callable, Dict, Optional, Union
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
+
+from ._compat import Literal
 
 c1 = 1.70158
 c2 = c1 * 1.525
@@ -150,11 +148,15 @@ def ease(
     if function is None:
         return progress
 
-    if callable(function):
+    elif callable(function):
         return function(progress)
 
-    easing_func = EASING_FUNCTIONS.get(function)
-    if easing_func is None:
-        raise ValueError(f"Unknown easing function: {function}")
+    elif isinstance(function, EasingName):
+        easing_func = EASING_FUNCTIONS.get(function)
+        if easing_func is None:
+            raise ValueError(f"Unknown easing function: {function}")
+
+    else:
+        raise ValueError("Invalid value passed for easing function")
 
     return easing_func(progress)

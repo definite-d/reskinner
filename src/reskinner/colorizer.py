@@ -6,13 +6,10 @@ from tkinter import Menu as TKMenu
 from tkinter import Widget
 from tkinter.ttk import Style
 from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 from colour import Color  # type: ignore[import-untyped]
 
+from ._compat import Literal
 from .constants import LRU_MAX_SIZE, ElementName, ScrollbarColorKey
 from .default_window import DEFAULT_ELEMENTS, DEFAULT_WINDOW
 from .easing import EasingName, ease
@@ -314,7 +311,12 @@ class Colorizer:
         window: sg.Window,
         configuration: ThemeConfiguration,
     ):
-        self._configure(configuration, window.TKroot.configure, _default_window_cget)
+        if window.TKroot:
+            self._configure(
+                configuration,
+                window.TKroot.configure,
+                _default_window_cget,
+            )
 
     # Specific
 
@@ -385,7 +387,7 @@ class Colorizer:
             default_style,
         )
 
-    def recurse_menu(self, tkmenu: Union[TKMenu, Widget]):
+    def recurse_menu(self, tkmenu: TKMenu):
         """
         Internal use only.
 
@@ -397,12 +399,13 @@ class Colorizer:
         :param tkmenu: The Tkinter menu object.
         :return: None
         """
+        end_menu_index = tkmenu.index("end")
 
         # This fixes issue #8. Thank you, @richnanney for reporting!
-        if tkmenu.index("end") is None:
+        if end_menu_index is None:
             return
 
-        for index in range(0, tkmenu.index("end") + 1):
+        for index in range(0, end_menu_index + 1):
             self.menu_entry(
                 tkmenu,
                 index,
