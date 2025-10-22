@@ -11,9 +11,6 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.7.9'
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v3
       - name: Ruff lint
