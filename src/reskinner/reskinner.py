@@ -122,8 +122,9 @@ def reskin(
                         warn("Window was closed during reskinning")
                         return
                     raise  # Re-raise other TclErrors
-
-                window.TKroot.update_idletasks()
+                
+                if window.TKroot:
+                    window.TKroot.update_idletasks()
 
         except Exception as e:
             warn(f"Error during animated reskin: {str(e)}")
@@ -185,9 +186,10 @@ def toggle_transparency(window: sg.Window) -> None:
         raise AttributeError("Window does not support transparency")
 
     try:
-        window_bg = window.TKroot.cget("background")
-        transparent_color = window.TKroot.attributes("-transparentcolor")
-        window.set_transparent_color(window_bg if transparent_color == "" else "")
+        if window.TKroot:
+            window_bg = window.TKroot.cget("background")
+            transparent_color = window.TKroot.attributes("-transparentcolor")
+            window.set_transparent_color(window_bg if transparent_color == "" else "")
     except TclError as e:
         if "unknown color name" in str(e):
             raise ValueError(f"Invalid color value: {window_bg}") from e

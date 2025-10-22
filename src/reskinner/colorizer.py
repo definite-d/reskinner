@@ -311,7 +311,8 @@ class Colorizer:
         window: sg.Window,
         configuration: ThemeConfiguration,
     ):
-        self._configure(configuration, window.TKroot.configure, _default_window_cget)
+        if window.TKroot:        
+            self._configure(configuration, window.TKroot.configure, _default_window_cget)
 
     # Specific
 
