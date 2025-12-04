@@ -41,8 +41,8 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/definite-d/psg_reskinner/"
-"Bug Tracker" = "https://github.com/definite-d/psg_reskinner/issues/"
+"Homepage" = "https://github.com/definite-d/reskinner/"
+"Bug Tracker" = "https://github.com/definite-d/reskinner/issues/"
 
 [project.optional-dependencies]
 psg = [
