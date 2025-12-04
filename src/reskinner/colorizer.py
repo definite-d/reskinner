@@ -337,6 +337,14 @@ class Colorizer:
         index: int,
         configuration: ThemeConfiguration,
     ):
+        configuration = dict(
+            filter(
+                lambda item: item[0] in menu.entryconfigure(index).keys(),
+                configuration.items(),
+            )
+        )
+        # Filter the configs for menu entries that don't accept the full config dict. Fixes issue #11.
+        # Brought back in v4.0.2 after its omission caused a regression leading to issue #22.
         self._configure(
             configuration,
             lambda **_configurations: menu.entryconfigure(index, _configurations),
