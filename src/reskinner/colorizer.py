@@ -447,13 +447,16 @@ class Colorizer:
             column.TKColFrame.configure,
             DEFAULT_ELEMENTS[sg.Column].TKColFrame.cget,
         )
-        self._configure(
-            {"background": "BACKGROUND"},
-            getattr(column.TKColFrame, "canvas").children["!frame"].configure,
-            getattr(DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas")
-            .children["!frame"]
-            .cget,
-        )
+        # Handle the inner frame if it exists
+        canvas = getattr(column.TKColFrame, "canvas", None)
+        if canvas and hasattr(canvas, 'children') and "!frame" in canvas.children:
+            self._configure(
+                {"background": "BACKGROUND"},
+                canvas.children["!frame"].configure,
+                getattr(DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas")
+                .children.get("!frame")
+                .cget if "!frame" in getattr(DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas", {}).children else lambda _: "white",
+            )
 
     def combo(self, combo: sg.Combo):
         # Configuring the listbox (popdown) of the combo.
@@ -491,7 +494,7 @@ class Colorizer:
                 "background": ("BUTTON", 1),
                 "arrowcolor": ("BUTTON", 0),
             },
-            _default_element_cget("combo", "style"),
+            _default_element_cget(sg.Combo, "style"),
         )
         self.map(
             style_name,
@@ -499,7 +502,7 @@ class Colorizer:
                 "foreground": {"readonly": "TEXT_INPUT"},
                 "fieldbackground": {"readonly": "INPUT"},
             },
-            _default_element_cget("combo", "style"),
+            _default_element_cget(sg.Combo, "style"),
             True,
         )
 
@@ -568,7 +571,7 @@ class Colorizer:
             f"{default_style}.Heading",
         )
 
-        if element_name == "table":
+        if element_type == sg.Table:
             self.map(
                 f"{style_name}.Heading",
                 {
@@ -584,5 +587,5 @@ class Colorizer:
         self.style(
             style_name,
             {"background": ("PROGRESS", 0), "troughcolor": ("PROGRESS", 1)},
-            _default_element_cget("progressbar", "style"),
+            _default_element_cget(sg.ProgressBar, "style"),
         )
