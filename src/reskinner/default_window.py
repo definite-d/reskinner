@@ -54,6 +54,7 @@ DEFAULT_WINDOW = sg.Window(
     location=(-1, -1),
 ).finalize()
 
+DEFAULT_WINDOW.TKroot.geometry("1x1+0+0")
 DEFAULT_ELEMENTS["tab"] = DEFAULT_WINDOW["tab"]
 sg.theme(_previous_theme)
 DEFAULT_WINDOW.close()
