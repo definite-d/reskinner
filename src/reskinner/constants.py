@@ -17,7 +17,7 @@ class InterpolationMode(StrEnum):
 def is_element_type(element, element_class):
     """
     Check if an element is of a specific PySimpleGUI type (including subclasses).
-    
+
     :param element: The element to check
     :param element_class: The PySimpleGUI class to check against (e.g., sg.Button)
     :return: True if the element is of that type

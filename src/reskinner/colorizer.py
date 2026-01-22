@@ -121,7 +121,7 @@ def _default_element_cget(element_class: Type, attribute: str) -> Union[str, Wid
     for cls in element_class.__mro__:
         if cls in DEFAULT_ELEMENTS:
             return DEFAULT_ELEMENTS[cls].widget[attribute]
-    
+
     # Fallback: try to create a temporary element
     try:
         temp_element = element_class()

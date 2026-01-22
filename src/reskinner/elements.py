@@ -8,7 +8,7 @@ from .sg import sg
 
 class ElementDispatcher:
     """Efficient element handler dispatcher with pre-computed type mappings."""
-    
+
     def __init__(self):
         # Direct type mappings for O(1) lookup
         self._type_handlers: Dict[Type, List[Callable]] = {}
@@ -16,32 +16,32 @@ class ElementDispatcher:
         self._conditional_handlers: List[Tuple[Callable, Callable]] = []
         # Generic handlers that apply to all elements
         self._generic_handlers: List[Callable] = []
-    
+
     def register_generic(self, handler: Callable) -> None:
         """Register a handler that applies to all elements."""
         self._generic_handlers.append(handler)
-    
+
     def register_conditional(self, condition: Callable, handler: Callable) -> None:
         """Register a handler with a custom condition."""
         self._conditional_handlers.append((condition, handler))
-    
+
     def register_type(self, element_type: Type, handler: Callable) -> None:
         """Register a handler for a specific element type."""
         if element_type not in self._type_handlers:
             self._type_handlers[element_type] = []
         self._type_handlers[element_type].append(handler)
-    
+
     def dispatch(self, element) -> None:
         """Dispatch element to all appropriate handlers."""
         # Apply generic handlers first
         for handler in self._generic_handlers:
             handler(element)
-        
+
         # Apply conditional handlers
         for condition, handler in self._conditional_handlers:
             if condition(element):
                 handler(element)
-        
+
         # Apply type-specific handlers
         element_type = type(element)
         for type_class, handlers in self._type_handlers.items():
@@ -69,21 +69,24 @@ class ElementReskinner:
         self._dispatcher.register_generic(self._handle_generic_tweaks)
         self._dispatcher.register_generic(self._handle_right_click_menus)
         self._dispatcher.register_generic(self._handle_ttk_scrollbars)
-        
+
         # Conditional handlers for special cases
         self._dispatcher.register_conditional(
             lambda e: e.metadata == sg.TITLEBAR_METADATA_MARKER,
-            self._reskin_custom_titlebar
+            self._reskin_custom_titlebar,
         )
         self._dispatcher.register_conditional(
             lambda e: str(e.widget).startswith(f"{self._titlebar_row_frame}."),
-            self._reskin_titlebar_child
+            self._reskin_titlebar_child,
         )
         self._dispatcher.register_conditional(
-            lambda e: (is_element_type(e, sg.Column) and (getattr(e, "TKColFrame", "Not Set") != "Not Set")),
-            self._reskin_scrollable_column
+            lambda e: (
+                is_element_type(e, sg.Column)
+                and (getattr(e, "TKColFrame", "Not Set") != "Not Set")
+            ),
+            self._reskin_scrollable_column,
         )
-        
+
         # Type-specific handlers
         self._dispatcher.register_type(sg.Button, self._reskin_button)
         self._dispatcher.register_type(sg.ButtonMenu, self._reskin_buttonmenu)
@@ -98,7 +101,7 @@ class ElementReskinner:
         self._dispatcher.register_type(sg.Slider, self._reskin_slider)
         self._dispatcher.register_type(sg.Spin, self._reskin_spin)
         self._dispatcher.register_type(sg.TabGroup, self._reskin_tabgroup)
-        
+
         # Multi-type handlers
         self._dispatcher.register_type(sg.Checkbox, self._reskin_checkbox)
         self._dispatcher.register_type(sg.Radio, self._reskin_checkbox)
