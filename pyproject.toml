@@ -78,6 +78,7 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "bumpver",
+    "freesimplegui>=5.2.0.post1",
     "isort",
     "ruff",
 ]
