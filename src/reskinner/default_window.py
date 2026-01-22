@@ -56,3 +56,4 @@ DEFAULT_WINDOW = sg.Window(
 
 DEFAULT_ELEMENTS["tab"] = DEFAULT_WINDOW["tab"]
 sg.theme(_previous_theme)
+DEFAULT_WINDOW.close()
