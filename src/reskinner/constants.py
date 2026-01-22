@@ -14,54 +14,30 @@ class InterpolationMode(StrEnum):
     RGB = "rgb"
 
 
-class ElementName(StrEnum):
-    BUTTON = "button"
-    BUTTONMENU = "buttonmenu"
-    CANVAS = "canvas"
-    CHECKBOX = "checkbox"
-    COLUMN = "column"
-    COMBO = "combo"
-    FRAME = "frame"
-    GRAPH = "graph"
-    HORIZONTALSEPARATOR = "horizontalseparator"
-    IMAGE = "image"
-    INPUT = "input"
-    LISTBOX = "listbox"
-    MENU = "menu"
-    MULTILINE = "multiline"
-    OPTIONMENU = "optionmenu"
-    PANE = "pane"
-    PROGRESSBAR = "progressbar"
-    RADIO = "radio"
-    SIZEGRIP = "sizegrip"
-    SLIDER = "slider"
-    SPIN = "spin"
-    STATUSBAR = "statusbar"
-    TAB = "tab"
-    TABGROUP = "tabgroup"
-    TABLE = "table"
-    TEXT = "text"
-    TREE = "tree"
-    VERTICALSEPARATOR = "verticalseparator"
-
-    @staticmethod
-    def from_element(element: sg.Element):
-        return ElementName(type(element).__name__.lower())
+def is_element_type(element, element_class):
+    """
+    Check if an element is of a specific PySimpleGUI type (including subclasses).
+    
+    :param element: The element to check
+    :param element_class: The PySimpleGUI class to check against (e.g., sg.Button)
+    :return: True if the element is of that type
+    """
+    return isinstance(element, element_class)
 
 
 NON_GENERIC_ELEMENTS = [
-    ElementName.BUTTON,
-    ElementName.HORIZONTALSEPARATOR,
-    ElementName.LISTBOX,
-    ElementName.MULTILINE,
-    ElementName.PROGRESSBAR,
-    ElementName.SIZEGRIP,
-    ElementName.SPIN,
-    ElementName.TABGROUP,
-    ElementName.TABLE,
-    ElementName.TEXT,
-    ElementName.TREE,
-    ElementName.VERTICALSEPARATOR,
+    sg.Button,
+    sg.HorizontalSeparator,
+    sg.Listbox,
+    sg.Multiline,
+    sg.ProgressBar,
+    sg.Sizegrip,
+    sg.Spin,
+    sg.TabGroup,
+    sg.Table,
+    sg.Text,
+    sg.Tree,
+    sg.VerticalSeparator,
 ]
 
 _COLOR_MAPPING = {

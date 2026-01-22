@@ -1,9 +1,53 @@
 from tkinter.ttk import Widget as TTKWidget
-from typing import Union
+from typing import Callable, Dict, List, Tuple, Type, Union
 
 from .colorizer import Colorizer
-from .constants import ALTER_MENU_ACTIVE_COLORS, ElementName
+from .constants import ALTER_MENU_ACTIVE_COLORS, is_element_type
 from .sg import sg
+
+
+class ElementDispatcher:
+    """Efficient element handler dispatcher with pre-computed type mappings."""
+    
+    def __init__(self):
+        # Direct type mappings for O(1) lookup
+        self._type_handlers: Dict[Type, List[Callable]] = {}
+        # Conditional handlers for special cases
+        self._conditional_handlers: List[Tuple[Callable, Callable]] = []
+        # Generic handlers that apply to all elements
+        self._generic_handlers: List[Callable] = []
+    
+    def register_generic(self, handler: Callable) -> None:
+        """Register a handler that applies to all elements."""
+        self._generic_handlers.append(handler)
+    
+    def register_conditional(self, condition: Callable, handler: Callable) -> None:
+        """Register a handler with a custom condition."""
+        self._conditional_handlers.append((condition, handler))
+    
+    def register_type(self, element_type: Type, handler: Callable) -> None:
+        """Register a handler for a specific element type."""
+        if element_type not in self._type_handlers:
+            self._type_handlers[element_type] = []
+        self._type_handlers[element_type].append(handler)
+    
+    def dispatch(self, element) -> None:
+        """Dispatch element to all appropriate handlers."""
+        # Apply generic handlers first
+        for handler in self._generic_handlers:
+            handler(element)
+        
+        # Apply conditional handlers
+        for condition, handler in self._conditional_handlers:
+            if condition(element):
+                handler(element)
+        
+        # Apply type-specific handlers
+        element_type = type(element)
+        for type_class, handlers in self._type_handlers.items():
+            if isinstance(element, type_class):
+                for handler in handlers:
+                    handler(element)
 
 
 class ElementReskinner:
@@ -16,18 +60,59 @@ class ElementReskinner:
         """
         self._titlebar_row_frame = "Not Set"
         self.colorizer: Colorizer = colorizer
+        self._dispatcher = ElementDispatcher()
+        self._register_handlers()
 
-    def reskin_element(self, element: sg.Element):
-        """
-        Reskin an element based on its type.
+    def _register_handlers(self) -> None:
+        """Register all element handlers."""
+        # Generic handlers that apply to all elements
+        self._dispatcher.register_generic(self._handle_generic_tweaks)
+        self._dispatcher.register_generic(self._handle_right_click_menus)
+        self._dispatcher.register_generic(self._handle_ttk_scrollbars)
+        
+        # Conditional handlers for special cases
+        self._dispatcher.register_conditional(
+            lambda e: e.metadata == sg.TITLEBAR_METADATA_MARKER,
+            self._reskin_custom_titlebar
+        )
+        self._dispatcher.register_conditional(
+            lambda e: str(e.widget).startswith(f"{self._titlebar_row_frame}."),
+            self._reskin_titlebar_child
+        )
+        self._dispatcher.register_conditional(
+            lambda e: (is_element_type(e, sg.Column) and (getattr(e, "TKColFrame", "Not Set") != "Not Set")),
+            self._reskin_scrollable_column
+        )
+        
+        # Type-specific handlers
+        self._dispatcher.register_type(sg.Button, self._reskin_button)
+        self._dispatcher.register_type(sg.ButtonMenu, self._reskin_buttonmenu)
+        self._dispatcher.register_type(sg.Canvas, self._reskin_canvas)
+        self._dispatcher.register_type(sg.Combo, self._reskin_combo)
+        self._dispatcher.register_type(sg.Frame, self._reskin_frame)
+        self._dispatcher.register_type(sg.Listbox, self._reskin_listbox)
+        self._dispatcher.register_type(sg.Menu, self._reskin_menu)
+        self._dispatcher.register_type(sg.ProgressBar, self._reskin_progressbar)
+        self._dispatcher.register_type(sg.OptionMenu, self._reskin_optionmenu)
+        self._dispatcher.register_type(sg.Sizegrip, self._reskin_sizegrip)
+        self._dispatcher.register_type(sg.Slider, self._reskin_slider)
+        self._dispatcher.register_type(sg.Spin, self._reskin_spin)
+        self._dispatcher.register_type(sg.TabGroup, self._reskin_tabgroup)
+        
+        # Multi-type handlers
+        self._dispatcher.register_type(sg.Checkbox, self._reskin_checkbox)
+        self._dispatcher.register_type(sg.Radio, self._reskin_checkbox)
+        self._dispatcher.register_type(sg.HorizontalSeparator, self._reskin_separator)
+        self._dispatcher.register_type(sg.VerticalSeparator, self._reskin_separator)
+        self._dispatcher.register_type(sg.Input, self._reskin_input)
+        self._dispatcher.register_type(sg.Multiline, self._reskin_input)
+        self._dispatcher.register_type(sg.Text, self._reskin_text)
+        self._dispatcher.register_type(sg.StatusBar, self._reskin_text)
+        self._dispatcher.register_type(sg.Table, self._reskin_table)
+        self._dispatcher.register_type(sg.Tree, self._reskin_table)
 
-        :param element: The PySimpleGUI element to reskin
-        :type element: sg.Element
-        """
-
-        element_name = ElementName.from_element(element)
-
-        # Generic tweaks
+    def _handle_generic_tweaks(self, element: sg.Element) -> None:
+        """Handle generic tweaks that apply to most elements."""
         if (
             getattr(element, "ParentRowFrame", False)
             and element.metadata != sg.TITLEBAR_METADATA_MARKER
@@ -39,11 +124,14 @@ class ElementReskinner:
         if "background" in element.widget.keys() and element.widget.cget("background"):
             self.colorizer.element(element, {"background": "BACKGROUND"})
 
-        # Right Click Menus (thanks for pointing this out @dwelden!)
+    def _handle_right_click_menus(self, element: sg.Element) -> None:
+        """Handle right-click menus."""
+        # Thanks for pointing this out @dwelden!
         if element.TKRightClickMenu:
             self.colorizer.recurse_menu(element.TKRightClickMenu)
 
-        # TTK Scrollbars
+    def _handle_ttk_scrollbars(self, element: sg.Element) -> None:
+        """Handle TTK scrollbars."""
         if getattr(element, "vsb_style_name", False):
             self.colorizer.scrollbar(element.vsb_style_name, "Vertical.TScrollbar")
         if getattr(element, "hsb_style_name", False):
@@ -62,47 +150,14 @@ class ElementReskinner:
                 self.colorizer.scrollbar(vertical_style, "TScrollbar")
             self.colorizer.scrollbar(element.ttk_style_name, "TScrollbar")
 
-        # Python 3.7-compatible match/case.
-        element_specific_reskin_function = {
-            (element.metadata == sg.TITLEBAR_METADATA_MARKER): self._titlebar_row_frame,
-            (
-                str(element.widget).startswith(f"{self._titlebar_row_frame}.")
-            ): self._reskin_titlebar_child,
-            (
-                (element_name == ElementName.COLUMN)
-                and (getattr(element, "TKColFrame", "Not Set") != "Not Set")
-            ): self._reskin_scrollable_column,
-            (element_name == ElementName.BUTTON): self._reskin_button,
-            (element_name == ElementName.BUTTONMENU): self._reskin_buttonmenu,
-            (element_name == ElementName.CANVAS): self._reskin_canvas,
-            (element_name == ElementName.COMBO): self._reskin_combo,
-            (element_name == ElementName.FRAME): self._reskin_frame,
-            (element_name == ElementName.LISTBOX): self._reskin_listbox,
-            (element_name == ElementName.MENU): self._reskin_menu,
-            (element_name == ElementName.PROGRESSBAR): self._reskin_progressbar,
-            (element_name == ElementName.OPTIONMENU): self._reskin_optionmenu,
-            (element_name == ElementName.SIZEGRIP): self._reskin_sizegrip,
-            (element_name == ElementName.SLIDER): self._reskin_slider,
-            (element_name == ElementName.SPIN): self._reskin_spin,
-            (element_name == ElementName.TABGROUP): self._reskin_tabgroup,
-            (
-                element_name in (ElementName.CHECKBOX, ElementName.RADIO)
-            ): self._reskin_checkbox,
-            (
-                element_name
-                in (ElementName.HORIZONTALSEPARATOR, ElementName.VERTICALSEPARATOR)
-            ): self._reskin_separator,
-            (
-                element_name in (ElementName.INPUT, ElementName.MULTILINE)
-            ): self._reskin_input,
-            (
-                element_name in (ElementName.TEXT, ElementName.STATUSBAR)
-            ): self._reskin_text,
-            (element_name in (ElementName.TABLE, ElementName.TREE)): self._reskin_table,
-        }.get(True, False)
+    def reskin_element(self, element: sg.Element):
+        """
+        Reskin an element.
 
-        if element_specific_reskin_function:
-            element_specific_reskin_function(element)
+        :param element: The PySimpleGUI element to reskin
+        :type element: sg.Element
+        """
+        self._dispatcher.dispatch(element)
 
     # Specific Elements
 

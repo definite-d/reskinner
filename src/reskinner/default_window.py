@@ -1,4 +1,4 @@
-from .constants import DEFAULT_THEME_NAME, ElementName
+from .constants import DEFAULT_THEME_NAME
 from .sg import sg
 
 _previous_theme = sg.theme()
@@ -13,33 +13,33 @@ _tree_data.Insert(
 )
 
 DEFAULT_ELEMENTS = {
-    ElementName.BUTTON: sg.Button(),
-    ElementName.BUTTONMENU: sg.ButtonMenu("", sg.MENU_RIGHT_CLICK_EDITME_EXIT),
-    ElementName.CANVAS: sg.Canvas(),
-    ElementName.CHECKBOX: sg.Checkbox(""),
-    ElementName.COLUMN: sg.Column([[sg.Text()]], scrollable=True),
-    ElementName.COMBO: sg.Combo([""]),
-    ElementName.FRAME: sg.Frame("", [[sg.Text()]]),
-    ElementName.GRAPH: sg.Graph((2, 2), (0, 2), (2, 0)),
-    ElementName.HORIZONTALSEPARATOR: sg.HorizontalSeparator(),  # 'image': sg.Image(),
-    ElementName.INPUT: sg.Input(),
-    ElementName.IMAGE: sg.Image(),
-    ElementName.LISTBOX: sg.Listbox([""]),
-    ElementName.MENU: sg.Menu([["File", ["Exit"]], ["Edit", ["Edit Me"]]]),
-    ElementName.MULTILINE: sg.Multiline(),
-    ElementName.OPTIONMENU: sg.OptionMenu([""]),
-    ElementName.PANE: sg.Pane([sg.Column([[sg.Text()]]), sg.Column([[sg.Text()]])]),
-    ElementName.PROGRESSBAR: sg.ProgressBar(0),
-    ElementName.RADIO: sg.Radio("", 0),
-    ElementName.SIZEGRIP: sg.Sizegrip(),
-    ElementName.SLIDER: sg.Slider(),
-    ElementName.SPIN: sg.Spin([0]),
-    ElementName.STATUSBAR: sg.StatusBar(""),
-    ElementName.TABGROUP: sg.TabGroup([[sg.Tab("", [[sg.Text()]], key="tab")]]),
-    ElementName.TABLE: sg.Table([["asdf"]]),
-    ElementName.TEXT: sg.Text(),
-    ElementName.TREE: sg.Tree(_tree_data, [""], num_rows=1),
-    ElementName.VERTICALSEPARATOR: sg.VerticalSeparator(),
+    sg.Button: sg.Button(),
+    sg.ButtonMenu: sg.ButtonMenu("", sg.MENU_RIGHT_CLICK_EDITME_EXIT),
+    sg.Canvas: sg.Canvas(),
+    sg.Checkbox: sg.Checkbox(""),
+    sg.Column: sg.Column([[sg.Text()]], scrollable=True),
+    sg.Combo: sg.Combo([""]),
+    sg.Frame: sg.Frame("", [[sg.Text()]]),
+    sg.Graph: sg.Graph((2, 2), (0, 2), (2, 0)),
+    sg.HorizontalSeparator: sg.HorizontalSeparator(),  # 'image': sg.Image(),
+    sg.Input: sg.Input(),
+    sg.Image: sg.Image(),
+    sg.Listbox: sg.Listbox([""]),
+    sg.Menu: sg.Menu([["File", ["Exit"]], ["Edit", ["Edit Me"]]]),
+    sg.Multiline: sg.Multiline(),
+    sg.OptionMenu: sg.OptionMenu([""]),
+    sg.Pane: sg.Pane([sg.Column([[sg.Text()]]), sg.Column([[sg.Text()]])]),
+    sg.ProgressBar: sg.ProgressBar(0),
+    sg.Radio: sg.Radio("", 0),
+    sg.Sizegrip: sg.Sizegrip(),
+    sg.Slider: sg.Slider(),
+    sg.Spin: sg.Spin([0]),
+    sg.StatusBar: sg.StatusBar(""),
+    sg.TabGroup: sg.TabGroup([[sg.Tab("", [[sg.Text()]], key="tab")]]),
+    sg.Table: sg.Table([["asdf"]]),
+    sg.Text: sg.Text(),
+    sg.Tree: sg.Tree(_tree_data, [""], num_rows=1),
+    sg.VerticalSeparator: sg.VerticalSeparator(),
 }
 
 # A completely invisible window, which should at worst show a

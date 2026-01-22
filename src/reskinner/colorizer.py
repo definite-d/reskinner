@@ -10,7 +10,7 @@ from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
 from colour import Color  # type: ignore[import-untyped]
 
 from ._compat import Literal
-from .constants import LRU_MAX_SIZE, ElementName, ScrollbarColorKey
+from .constants import LRU_MAX_SIZE, ScrollbarColorKey
 from .default_window import DEFAULT_ELEMENTS, DEFAULT_WINDOW
 from .easing import EasingName, ease
 from .interpolation import INTERPOLATION_MODES, InterpolationMethod
@@ -104,19 +104,31 @@ def _default_window_cget(attribute: str) -> Any:
 
 
 @lru_cache(maxsize=LRU_MAX_SIZE)
-def _default_element_cget(element_name: str, attribute: str) -> Union[str, Widget]:
-    """Get an element attribute using cget.
+def _default_element_cget(element_class: Type, attribute: str) -> Union[str, Widget]:
+    """
+    Get the default value for an element's attribute.
 
     Internal use only.
 
-    :param element_name: The name of the element
-    :type element_name: str
+    :param element_class: The class of the element
+    :type element_class: Type
     :param attribute: The attribute to pass to the cget function
     :type attribute: str
     :return: The result of the cget function
     :rtype: Union[str, Widget]
     """
-    return DEFAULT_ELEMENTS[element_name].widget[attribute]
+    # Try to find the element in DEFAULT_ELEMENTS, checking base classes if needed
+    for cls in element_class.__mro__:
+        if cls in DEFAULT_ELEMENTS:
+            return DEFAULT_ELEMENTS[cls].widget[attribute]
+    
+    # Fallback: try to create a temporary element
+    try:
+        temp_element = element_class()
+        return temp_element.widget[attribute]
+    except Exception:
+        # Final fallback: return a reasonable default
+        return "black"
 
 
 def _run_progressbar_computation(theme_dict: ThemeDict) -> ThemeDict:
@@ -144,7 +156,7 @@ def _get_checkbox_radio_selectcolor(background_color, text_color) -> str:
     # PySimpleGUI's color conversion functions give different results than those of the colour module
     # due to floating point truncation, so I can't use the color module's functionality for everything here.
     if not all([_is_valid_color(background_color), _is_valid_color(text_color)]):
-        return _default_element_cget(ElementName.CHECKBOX, "selectcolor") or "black"
+        return _default_element_cget(sg.Checkbox, "selectcolor") or "black"
     background_color: str = Color(background_color).get_hex_l()
     text_color: str = Color(text_color).get_hex_l()
     background_hsl: Tuple[float, float, float] = sg._hex_to_hsl(background_color)
@@ -174,7 +186,7 @@ def _default_combo_popdown_cget(attribute: str) -> str:
     """
     DEFAULT_WINDOW.TKroot.tk.call(
         "eval",
-        f"set defaultcombo [ttk::combobox::PopdownWindow {DEFAULT_ELEMENTS['combo'].widget}]",
+        f"set defaultcombo [ttk::combobox::PopdownWindow {DEFAULT_ELEMENTS[sg.Combo].widget}]",
     )
     return DEFAULT_WINDOW.TKroot.tk.call("eval", f"$defaultcombo.f.l cget -{attribute}")
 
@@ -254,7 +266,7 @@ class Colorizer:
             configuration,
             element.widget.configure,
             lambda attribute: _default_element_cget(
-                ElementName.from_element(element),
+                type(element),
                 attribute,
             ),
         )
@@ -328,7 +340,7 @@ class Colorizer:
         self._configure(
             configuration,
             parent_row_frame.configure,
-            getattr(DEFAULT_ELEMENTS["text"], "ParentRowFrame").cget,
+            getattr(DEFAULT_ELEMENTS[sg.Text], "ParentRowFrame").cget,
         )
 
     def menu_entry(
@@ -348,7 +360,7 @@ class Colorizer:
         self._configure(
             configuration,
             lambda **_configurations: menu.entryconfigure(index, _configurations),
-            lambda attribute: _default_element_cget("menu", attribute),
+            lambda attribute: _default_element_cget(sg.Menu, attribute),
         )
 
     def optionmenu_menu(
@@ -359,7 +371,7 @@ class Colorizer:
         self._configure(
             configuration,
             optionmenu.widget["menu"].configure,
-            _default_element_cget(ElementName.OPTIONMENU, "menu").cget,
+            _default_element_cget(sg.OptionMenu, "menu").cget,
         )
 
     def scrollbar(
@@ -433,12 +445,12 @@ class Colorizer:
         self._configure(
             {"background": "BACKGROUND"},
             column.TKColFrame.configure,
-            DEFAULT_ELEMENTS["column"].TKColFrame.cget,
+            DEFAULT_ELEMENTS[sg.Column].TKColFrame.cget,
         )
         self._configure(
             {"background": "BACKGROUND"},
             getattr(column.TKColFrame, "canvas").children["!frame"].configure,
-            getattr(DEFAULT_ELEMENTS["column"].TKColFrame, "canvas")
+            getattr(DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas")
             .children["!frame"]
             .cget,
         )
@@ -492,16 +504,16 @@ class Colorizer:
         )
 
     def checkbox_or_radio(self, element: Union[sg.Checkbox, sg.Radio]):
-        element_name = ElementName.from_element(element)
+        element_type = type(element)
         toggle = (
             _get_checkbox_radio_selectcolor(
                 self._color(
                     "BACKGROUND",
-                    lambda: _default_element_cget(element_name, "selectcolor"),
+                    lambda: _default_element_cget(element_type, "selectcolor"),
                 ),
                 self._color(
                     "TEXT",
-                    lambda: _default_element_cget(element_name, "selectcolor"),
+                    lambda: _default_element_cget(element_type, "selectcolor"),
                 ),
             ),
         )
@@ -520,7 +532,7 @@ class Colorizer:
 
     def table_or_tree(self, element: Union[sg.Table, sg.Tree]):
         style_name = element.widget["style"]
-        element_name = ElementName.from_element(element)
+        element_type = type(element)
         default_style = element.widget.winfo_class()
         self.style(
             style_name,
