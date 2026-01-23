@@ -449,13 +449,18 @@ class Colorizer:
         )
         # Handle the inner frame if it exists
         canvas = getattr(column.TKColFrame, "canvas", None)
-        if canvas and hasattr(canvas, 'children') and "!frame" in canvas.children:
+        if canvas and hasattr(canvas, "children") and "!frame" in canvas.children:
             self._configure(
                 {"background": "BACKGROUND"},
                 canvas.children["!frame"].configure,
                 getattr(DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas")
                 .children.get("!frame")
-                .cget if "!frame" in getattr(DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas", {}).children else lambda _: "white",
+                .cget
+                if "!frame"
+                in getattr(
+                    DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas", {}
+                ).children
+                else lambda _: "white",
             )
 
     def combo(self, combo: sg.Combo):
