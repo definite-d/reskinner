@@ -2,7 +2,7 @@
 name = "reskinner"
 requires-python = ">=3.7"
 description = "Instantaneous theme changing for PySimpleGUI and FreeSimpleGUI windows."
-version = "4.1.2"
+version = "4.1.3"
 authors = [{ name = "Divine U. Afam-Ifediogor" }]
 license = { file = "LICENSE" }
 readme = "./res/DESCRIPTION.md"
@@ -88,7 +88,7 @@ target-version = "py37"
 line-length = 88
 
 [tool.bumpver]
-current_version = "4.1.2"
+current_version = "4.1.3"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 tag_message = "{new_version}"
