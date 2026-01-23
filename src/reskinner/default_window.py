@@ -1,4 +1,4 @@
-from .constants import DEFAULT_THEME_NAME, ElementName
+from .constants import DEFAULT_THEME_NAME
 from .sg import sg
 
 _previous_theme = sg.theme()
@@ -13,46 +13,49 @@ _tree_data.Insert(
 )
 
 DEFAULT_ELEMENTS = {
-    ElementName.BUTTON: sg.Button(),
-    ElementName.BUTTONMENU: sg.ButtonMenu("", sg.MENU_RIGHT_CLICK_EDITME_EXIT),
-    ElementName.CANVAS: sg.Canvas(),
-    ElementName.CHECKBOX: sg.Checkbox(""),
-    ElementName.COLUMN: sg.Column([[sg.Text()]], scrollable=True),
-    ElementName.COMBO: sg.Combo([""]),
-    ElementName.FRAME: sg.Frame("", [[sg.Text()]]),
-    ElementName.GRAPH: sg.Graph((2, 2), (0, 2), (2, 0)),
-    ElementName.HORIZONTALSEPARATOR: sg.HorizontalSeparator(),  # 'image': sg.Image(),
-    ElementName.INPUT: sg.Input(),
-    ElementName.IMAGE: sg.Image(),
-    ElementName.LISTBOX: sg.Listbox([""]),
-    ElementName.MENU: sg.Menu([["File", ["Exit"]], ["Edit", ["Edit Me"]]]),
-    ElementName.MULTILINE: sg.Multiline(),
-    ElementName.OPTIONMENU: sg.OptionMenu([""]),
-    ElementName.PANE: sg.Pane([sg.Column([[sg.Text()]]), sg.Column([[sg.Text()]])]),
-    ElementName.PROGRESSBAR: sg.ProgressBar(0),
-    ElementName.RADIO: sg.Radio("", 0),
-    ElementName.SIZEGRIP: sg.Sizegrip(),
-    ElementName.SLIDER: sg.Slider(),
-    ElementName.SPIN: sg.Spin([0]),
-    ElementName.STATUSBAR: sg.StatusBar(""),
-    ElementName.TABGROUP: sg.TabGroup([[sg.Tab("", [[sg.Text()]], key="tab")]]),
-    ElementName.TABLE: sg.Table([["asdf"]]),
-    ElementName.TEXT: sg.Text(),
-    ElementName.TREE: sg.Tree(_tree_data, [""], num_rows=1),
-    ElementName.VERTICALSEPARATOR: sg.VerticalSeparator(),
+    sg.Button: sg.Button(size=(1, 1)),
+    sg.ButtonMenu: sg.ButtonMenu("", sg.MENU_RIGHT_CLICK_EDITME_EXIT, size=(1, 1)),
+    sg.Canvas: sg.Canvas(size=(1, 1)),
+    sg.Checkbox: sg.Checkbox("", size=(1, 1)),
+    sg.Column: sg.Column([[sg.Text()]], scrollable=True, size=(1, 1)),
+    sg.Combo: sg.Combo([""], size=(1, 1)),
+    sg.Frame: sg.Frame("", [[sg.Text(size=(1, 1))]], size=(1, 1)),
+    sg.Graph: sg.Graph((1, 1), (0, 0), (1, 1)),
+    sg.HorizontalSeparator: sg.HorizontalSeparator(),
+    sg.Input: sg.Input(size=(1, 1)),
+    sg.Image: sg.Image(size=(1, 1)),
+    sg.Listbox: sg.Listbox([""], size=(1, 1)),
+    sg.Menu: sg.Menu([["File", ["Exit"]], ["Edit", ["Edit Me"]]], size=(1, 1)),
+    sg.Multiline: sg.Multiline(size=(1, 1)),
+    sg.OptionMenu: sg.OptionMenu([""], size=(1, 1)),
+    sg.Pane: sg.Pane([sg.Column([[sg.Text(size=(1, 1))]], size=(1, 1))]),
+    sg.ProgressBar: sg.ProgressBar(0, size=(1, 1)),
+    sg.Radio: sg.Radio("", 0, size=(1, 1)),
+    sg.Sizegrip: sg.Sizegrip(),
+    sg.Slider: sg.Slider(size=(1, 1)),
+    sg.Spin: sg.Spin([0], size=(1, 1)),
+    sg.StatusBar: sg.StatusBar("", size=(1, 1)),
+    sg.TabGroup: sg.TabGroup([[sg.Tab("", [[sg.Text()]], key="tab")]], size=(1, 1)),
+    sg.Table: sg.Table([["asdf"]], size=(1, 1)),
+    sg.Text: sg.Text(size=(1, 1)),
+    sg.Tree: sg.Tree(_tree_data, [""], num_rows=1),
+    sg.VerticalSeparator: sg.VerticalSeparator(),
 }
 
-# A completely invisible window, which should at worst show a
-# small line at the top-right of the left display if
-# viewed on a Raspberry Pi with multiple monitors. Unlikely.
-DEFAULT_WINDOW = sg.Window(
+# A completely invisible window (on most platforms), which should at worst
+# flash the default window, then show a small line at the top-right of the
+# left display.
+DEFAULT_WINDOW: sg.Window = sg.Window(
     "",
     [[element] for element in DEFAULT_ELEMENTS.values()],
-    size=(1, 1),
+    size=(0, 0),
     no_titlebar=True,
+    finalize=True,
+    element_padding=(0, 0),
     alpha_channel=0,
     location=(-1, -1),
-).finalize()
+)
 
+DEFAULT_WINDOW.hide()
 DEFAULT_ELEMENTS["tab"] = DEFAULT_WINDOW["tab"]
 sg.theme(_previous_theme)

@@ -54,9 +54,10 @@ def main():
             theme_function=sg.theme,
             lf_table=sg.LOOK_AND_FEEL_TABLE,
             duration=450,
-            interpolation_mode="hsl",
+            interpolation_mode="hue",
         )
-        window.TKroot.after(2000, _reskin_job)
+        if window.TKroot:
+            window.TKroot.after(2000, _reskin_job)
 
     started = False
 
