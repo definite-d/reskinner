@@ -25,12 +25,17 @@ lint:
 # push tag and create PR (for when we've already bumped the version)
 push-release:
 	@echo "Creating release tag with v prefix..."
-	git tag "v$(shell bumpver get current)" $(shell bumpver get current)
-	@echo "Pushing tags to trigger build..."
-	git push origin --tags
-	@echo "Creating PR to sync dev to main..."
-	gh pr create --base main --head dev --title "Sync dev to main after release" --body "Automated PR to sync dev branch changes to main after release v$(shell bumpver get current)\n\n## Changelog\n$$(make changelog)"
-	@echo "Release pushed successfully!"
+	@CURRENT_VERSION=$$(uv run bumpver show | grep "Current Version:" | cut -d' ' -f3); \
+	git tag "v$$CURRENT_VERSION" $$CURRENT_VERSION; \
+	echo "Pushing tags to trigger build..."; \
+	git push origin --tags; \
+	echo "Creating PR to sync dev to main..."; \
+	if gh pr view --base main --head dev > /dev/null 2>&1; then \
+		echo "PR already exists. Skipping PR creation."; \
+	else \
+		gh pr create --base main --head dev --title "Sync dev to main after release" --body "Automated PR to sync dev branch changes to main after release v$$CURRENT_VERSION\n\n## Changelog\n$$(make changelog)"; \
+	fi; \
+	echo "Release pushed successfully!"
 
 # create release with specified level: make release LEVEL=patch|minor|major
 release: lint
