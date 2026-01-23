@@ -83,6 +83,10 @@ dev = [
     "ruff",
 ]
 
+[tool.ruff]
+target-version = "py37"
+line-length = 88
+
 [tool.bumpver]
 current_version = "4.1.2"
 version_pattern = "MAJOR.MINOR.PATCH"
