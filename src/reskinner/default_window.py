@@ -1,4 +1,3 @@
-from FreeSimpleGUI import _convert_window_to_tk, InitializeResults
 from .constants import DEFAULT_THEME_NAME
 from .sg import sg
 
