@@ -43,7 +43,6 @@ class ElementDispatcher:
                 handler(element)
 
         # Apply type-specific handlers
-        element_type = type(element)
         for type_class, handlers in self._type_handlers.items():
             if isinstance(element, type_class):
                 for handler in handlers:
