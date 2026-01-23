@@ -43,8 +43,8 @@ DEFAULT_ELEMENTS = {
     sg.VerticalSeparator: sg.VerticalSeparator(),
 }
 
-# A completely invisible window (on most platforms), which should at worst 
-# flash the default window, then show a small line at the top-right of the 
+# A completely invisible window (on most platforms), which should at worst
+# flash the default window, then show a small line at the top-right of the
 # left display.
 DEFAULT_WINDOW: sg.Window = sg.Window(
     "",
