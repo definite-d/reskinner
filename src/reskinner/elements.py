@@ -1,8 +1,17 @@
+from tkinter import Frame as TKFrame
+from tkinter import Menu as TKMenu
 from tkinter.ttk import Widget as TTKWidget
 from typing import Callable, Dict, List, Tuple, Type, Union
 
-from .colorizer import Colorizer
-from .constants import ALTER_MENU_ACTIVE_COLORS, is_element_type
+from .colorizer import (
+    Colorizer,
+    ThemeConfiguration,
+    _default_combo_popdown_cget,
+    _default_element_cget,
+    _get_checkbox_radio_selectcolor,
+)
+from .constants import ALTER_MENU_ACTIVE_COLORS, ScrollbarColorKey, is_element_type
+from .default_window import DEFAULT_ELEMENTS
 from .sg import sg
 
 
@@ -119,9 +128,7 @@ class ElementReskinner:
             getattr(element, "ParentRowFrame", False)
             and element.metadata != sg.TITLEBAR_METADATA_MARKER
         ):
-            self.colorizer.parent_row_frame(
-                element.ParentRowFrame, {"background": "BACKGROUND"}
-            )
+            self._parent_row_frame(element.ParentRowFrame, {"background": "BACKGROUND"})
 
         if "background" in element.widget.keys() and element.widget.cget("background"):
             self.colorizer.element(element, {"background": "BACKGROUND"})
@@ -130,14 +137,14 @@ class ElementReskinner:
         """Handle right-click menus."""
         # Thanks for pointing this out @dwelden!
         if element.TKRightClickMenu:
-            self.colorizer.recurse_menu(element.TKRightClickMenu)
+            self._recurse_menu(element.TKRightClickMenu)
 
     def _handle_ttk_scrollbars(self, element: sg.Element) -> None:
         """Handle TTK scrollbars."""
         if getattr(element, "vsb_style_name", False):
-            self.colorizer.scrollbar(element.vsb_style_name, "Vertical.TScrollbar")
+            self._scrollbar(element.vsb_style_name, "Vertical.TScrollbar")
         if getattr(element, "hsb_style_name", False):
-            self.colorizer.scrollbar(element.hsb_style_name, "Horizontal.TScrollbar")
+            self._scrollbar(element.hsb_style_name, "Horizontal.TScrollbar")
         if getattr(
             element, "ttk_style_name", False
         ) and element.ttk_style_name.endswith("TScrollbar"):
@@ -149,8 +156,8 @@ class ElementReskinner:
                 )
                 digit = str(int(digit) - 1)
                 vertical_style = f"{digit}_{rest}"
-                self.colorizer.scrollbar(vertical_style, "TScrollbar")
-            self.colorizer.scrollbar(element.ttk_style_name, "TScrollbar")
+                self._scrollbar(vertical_style, "TScrollbar")
+            self._scrollbar(element.ttk_style_name, "TScrollbar")
 
     def reskin_element(self, element: sg.Element):
         """
@@ -166,15 +173,13 @@ class ElementReskinner:
     def _reskin_custom_titlebar(self, element: sg.Element):
         self.colorizer.element(element, {"background": ("BUTTON", 1)})
         if element.ParentRowFrame:
-            self.colorizer.parent_row_frame(
+            self._parent_row_frame(
                 element.ParentRowFrame, {"background": ("BUTTON", 1)}
             )
         self.titlebar_row_frame = str(element.ParentRowFrame)
 
     def _reskin_titlebar_child(self, element: sg.Element):
-        self.colorizer.parent_row_frame(
-            element.ParentRowFrame, {"background": ("BUTTON", 1)}
-        )
+        self._parent_row_frame(element.ParentRowFrame, {"background": ("BUTTON", 1)})
         self.colorizer.element(element, {"background": ("BUTTON", 1)})
         if "foreground" in element.widget.keys():
             self.colorizer.element(element, {"foreground": ("BUTTON", 0)})
@@ -226,7 +231,7 @@ class ElementReskinner:
             },
         )
         if getattr(element, "TKMenu", False):
-            self.colorizer.recurse_menu(element.TKMenu)
+            self._recurse_menu(element.TKMenu)
 
     def _reskin_canvas(self, element: sg.Canvas):
         self.colorizer.element(element, {"highlightbackground": "BACKGROUND"})
@@ -235,10 +240,54 @@ class ElementReskinner:
         if hasattr(
             element.TKColFrame, "canvas"
         ):  # This means the column is scrollable.
-            self.colorizer.scrollable_column(element)
+            self._scrollable_column(element)
 
     def _reskin_combo(self, element: sg.Combo):
-        self.colorizer.combo(element)
+        # Configuring the listbox (popdown) of the combo.
+        element.widget.tk.call(
+            "eval", f"set popdown [ttk::combobox::PopdownWindow {element.widget}]"
+        )
+
+        def _configure_combo_popdown(**kwargs):
+            for attribute, value in kwargs.items():
+                element.widget.tk.call(
+                    "eval", f"$popdown.f.l configure -{attribute} {value}"
+                )
+
+        self.colorizer.configure(
+            {
+                "background": "INPUT",
+                "foreground": "TEXT_INPUT",
+                "selectforeground": "INPUT",
+                "selectbackground": "TEXT_INPUT",
+            },
+            _configure_combo_popdown,
+            _default_combo_popdown_cget,
+        )
+
+        # Configuring the combo itself.
+        style_name = element.widget["style"]
+        self.colorizer.style(
+            style_name,
+            {
+                "selectforeground": "TEXT_INPUT",
+                "selectbackground": "INPUT",
+                "selectcolor": "TEXT_INPUT",
+                "foreground": "TEXT_INPUT",
+                "background": ("BUTTON", 1),
+                "arrowcolor": ("BUTTON", 0),
+            },
+            _default_element_cget(sg.Combo, "style"),
+        )
+        self.colorizer.map(
+            style_name,
+            {
+                "foreground": {"readonly": "TEXT_INPUT"},
+                "fieldbackground": {"readonly": "INPUT"},
+            },
+            _default_element_cget(sg.Combo, "style"),
+            True,
+        )
 
     def _reskin_frame(self, element: sg.Frame):
         self.colorizer.element(element, {"foreground": "TEXT"})
@@ -255,13 +304,18 @@ class ElementReskinner:
         )
 
     def _reskin_menu(self, element: sg.Menu):
-        self.colorizer.recurse_menu(element.widget)
+        self._recurse_menu(element.widget)
 
     def _reskin_progressbar(self, element: sg.ProgressBar):
-        self.colorizer.progressbar(element)
+        style_name = element.ttk_style_name
+        self.colorizer.style(
+            style_name,
+            {"background": ("PROGRESS", 0), "troughcolor": ("PROGRESS", 1)},
+            _default_element_cget(sg.ProgressBar, "style"),
+        )
 
     def _reskin_optionmenu(self, element: sg.OptionMenu):
-        self.colorizer.optionmenu_menu(
+        self._optionmenu_menu(
             element,
             {
                 "foreground": "TEXT_INPUT",
@@ -269,7 +323,7 @@ class ElementReskinner:
             },
         )
         if ALTER_MENU_ACTIVE_COLORS:
-            self.colorizer.optionmenu_menu(
+            self._optionmenu_menu(
                 element,
                 {"activeforeground": "INPUT", "activebackground": "TEXT_INPUT"},
             )
@@ -313,7 +367,31 @@ class ElementReskinner:
         )
 
     def _reskin_checkbox(self, element: Union[sg.Checkbox, sg.Radio]):
-        self.colorizer.checkbox_or_radio(element)
+        element_type = type(element)
+        toggle = (
+            _get_checkbox_radio_selectcolor(
+                self.colorizer._color(
+                    "BACKGROUND",
+                    lambda: _default_element_cget(element_type, "selectcolor"),
+                ),
+                self.colorizer._color(
+                    "TEXT",
+                    lambda: _default_element_cget(element_type, "selectcolor"),
+                ),
+            ),
+        )
+        element.widget.configure(
+            {"selectcolor": toggle}
+        )  # A rare case where we use the configure method directly.
+        self.colorizer.element(
+            element,
+            {
+                "background": "BACKGROUND",
+                "foreground": "TEXT",
+                "activebackground": "BACKGROUND",
+                "activeforeground": "TEXT",
+            },
+        )
 
     def _reskin_separator(
         self, element: Union[sg.HorizontalSeparator, sg.VerticalSeparator]
@@ -343,4 +421,181 @@ class ElementReskinner:
         )
 
     def _reskin_table(self, element: Union[sg.Table, sg.Tree]):
-        self.colorizer.table_or_tree(element)
+        style_name = element.widget["style"]
+        element_type = type(element)
+        default_style = element.widget.winfo_class()
+        self.colorizer.style(
+            style_name,
+            {
+                "foreground": "TEXT",
+                "background": "BACKGROUND",
+                "fieldbackground": "BACKGROUND",
+                "fieldcolor": "TEXT",
+            },
+            default_style,
+            fallback="white",
+        )
+        self.colorizer.map(
+            style_name,
+            {
+                "foreground": {
+                    "selected": ("BUTTON", 0),
+                },
+                "background": {
+                    "selected": ("BUTTON", 1),
+                },
+            },
+            default_style,
+            True,
+            fallback="white",
+        )
+        self.colorizer.style(
+            f"{style_name}.Heading",
+            {
+                "foreground": "TEXT_INPUT",
+                "background": "INPUT",
+            },
+            f"{default_style}.Heading",
+        )
+
+        if element_type == sg.Table:
+            self.colorizer.map(
+                f"{style_name}.Heading",
+                {
+                    "foreground": {"active": "INPUT"},
+                    "background": {"active": "TEXT_INPUT"},
+                },
+                f"{default_style}.Heading",
+                True,
+            )
+
+    def _parent_row_frame(
+        self,
+        parent_row_frame: TKFrame,
+        configuration: ThemeConfiguration,
+    ):
+        self.colorizer.configure(
+            configuration,
+            parent_row_frame.configure,
+            getattr(DEFAULT_ELEMENTS[sg.Text], "ParentRowFrame").cget,
+        )
+
+    def _recurse_menu(self, tkmenu):
+        """
+        Internal use only.
+
+        New and improved logic to change the theme of menus; we no longer take the lazy route of
+        re-declaring new menu elements with each theme change - a method which Tkinter has an upper limit
+        on. Rather, we recursively find and reconfigure the individual Menu objects that make up menus and
+        submenus.
+
+        :param tkmenu: The Tkinter menu object.
+        :return: None
+        """
+        end_menu_index = tkmenu.index("end")
+
+        # This fixes issue #8. Thank you, @richnanney for reporting!
+        if end_menu_index is None:
+            return
+
+        for index in range(0, end_menu_index + 1):
+            self._menu_entry(
+                tkmenu,
+                index,
+                {
+                    "foreground": "TEXT_INPUT",
+                    "background": "INPUT",
+                    "activeforeground": "INPUT",
+                    "activebackground": "TEXT_INPUT",
+                },
+            )
+
+        for child in tkmenu.children.values():
+            if issubclass(type(child), TKMenu):
+                self._recurse_menu(child)
+
+    def _scrollable_column(self, column: sg.Column):
+        self.colorizer.configure(
+            {"background": "BACKGROUND"},
+            column.TKColFrame.configure,
+            DEFAULT_ELEMENTS[sg.Column].TKColFrame.cget,
+        )
+        # Handle the inner frame if it exists
+        canvas = getattr(column.TKColFrame, "canvas", None)
+        if canvas and hasattr(canvas, "children") and "!frame" in canvas.children:
+            self.colorizer.configure(
+                {"background": "BACKGROUND"},
+                canvas.children["!frame"].configure,
+                getattr(DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas")
+                .children.get("!frame")
+                .cget
+                if "!frame"
+                in getattr(
+                    DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas", {}
+                ).children
+                else lambda _: "white",
+            )
+
+    def _menu_entry(
+        self,
+        menu: TKMenu,
+        index: int,
+        configuration: ThemeConfiguration,
+    ):
+        configuration = dict(
+            filter(
+                lambda item: item[0] in menu.entryconfigure(index).keys(),
+                configuration.items(),
+            )
+        )
+        # Filter the configs for menu entries that don't accept the full config dict. Fixes issue #11.
+        # Brought back in v4.0.2 after its omission caused a regression leading to issue #22.
+        self.colorizer.configure(
+            configuration,
+            lambda **_configurations: menu.entryconfigure(index, _configurations),
+            lambda attribute: _default_element_cget(sg.Menu, attribute),
+        )
+
+    def _optionmenu_menu(
+        self,
+        optionmenu: sg.OptionMenu,
+        configuration: ThemeConfiguration,
+    ):
+        self.colorizer.configure(
+            configuration,
+            optionmenu.widget["menu"].configure,
+            _default_element_cget(sg.OptionMenu, "menu").cget,
+        )
+
+    def _scrollbar(
+        self,
+        style_name: str,
+        default_style: str,
+    ):
+        self.colorizer.style(
+            style_name,
+            {
+                "troughcolor": ScrollbarColorKey.TROUGH.value,
+                "framecolor": ScrollbarColorKey.FRAME.value,
+                "bordercolor": ScrollbarColorKey.FRAME.value,
+            },
+            default_style,
+        )
+        self.colorizer.map(
+            style_name,
+            {
+                "background": {
+                    "selected": ScrollbarColorKey.BACKGROUND.value,
+                    "active": ScrollbarColorKey.ARROW.value,
+                    "background": ScrollbarColorKey.BACKGROUND.value,
+                    "!focus": ScrollbarColorKey.BACKGROUND.value,
+                },
+                "arrowcolor": {
+                    "selected": ScrollbarColorKey.ARROW.value,
+                    "active": ScrollbarColorKey.BACKGROUND.value,
+                    "background": ScrollbarColorKey.BACKGROUND.value,
+                    "!focus": ScrollbarColorKey.ARROW.value,
+                },
+            },
+            default_style,
+        )

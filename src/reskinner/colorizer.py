@@ -233,15 +233,13 @@ class Colorizer:
             start, end, ease(self.progress, self.easing_function)
         ).get_hex_l()
 
-    def _configure(
+    def configure(
         self,
         attributes_to_theme_dict_color_keys: ThemeConfiguration,
         func_to_apply_configurations: Callable,
         func_to_get_default_color: Callable,
     ):
         """
-        Internal use only.
-
         Configures the colors of anything (elements, widgets, styles etc.) safely by calling a config function and
         supplying processed colors.
 
@@ -262,7 +260,7 @@ class Colorizer:
         element: sg.Element,
         configuration: ThemeConfiguration,
     ):
-        self._configure(
+        self.configure(
             configuration,
             element.widget.configure,
             lambda attribute: _default_element_cget(
@@ -280,7 +278,7 @@ class Colorizer:
     ):
         # if self.styler.configure(style) is None:
         #     raise ReskinnerException(f"`{style}` doesn't exist.")
-        self._configure(
+        self.configure(
             configuration,
             lambda **kwargs: self.styler.configure(style, **kwargs),
             lambda attribute: self.styler.lookup(
@@ -324,273 +322,8 @@ class Colorizer:
         configuration: ThemeConfiguration,
     ):
         if window.TKroot:
-            self._configure(
+            self.configure(
                 configuration,
                 window.TKroot.configure,
                 _default_window_cget,
             )
-
-    # Specific
-
-    def parent_row_frame(
-        self,
-        parent_row_frame: TKFrame,
-        configuration: ThemeConfiguration,
-    ):
-        self._configure(
-            configuration,
-            parent_row_frame.configure,
-            getattr(DEFAULT_ELEMENTS[sg.Text], "ParentRowFrame").cget,
-        )
-
-    def menu_entry(
-        self,
-        menu: TKMenu,
-        index: int,
-        configuration: ThemeConfiguration,
-    ):
-        configuration = dict(
-            filter(
-                lambda item: item[0] in menu.entryconfigure(index).keys(),
-                configuration.items(),
-            )
-        )
-        # Filter the configs for menu entries that don't accept the full config dict. Fixes issue #11.
-        # Brought back in v4.0.2 after its omission caused a regression leading to issue #22.
-        self._configure(
-            configuration,
-            lambda **_configurations: menu.entryconfigure(index, _configurations),
-            lambda attribute: _default_element_cget(sg.Menu, attribute),
-        )
-
-    def optionmenu_menu(
-        self,
-        optionmenu: sg.OptionMenu,
-        configuration: ThemeConfiguration,
-    ):
-        self._configure(
-            configuration,
-            optionmenu.widget["menu"].configure,
-            _default_element_cget(sg.OptionMenu, "menu").cget,
-        )
-
-    def scrollbar(
-        self,
-        style_name: str,
-        default_style: str,
-    ):
-        self.style(
-            style_name,
-            {
-                "troughcolor": ScrollbarColorKey.TROUGH.value,
-                "framecolor": ScrollbarColorKey.FRAME.value,
-                "bordercolor": ScrollbarColorKey.FRAME.value,
-            },
-            default_style,
-        )
-        self.map(
-            style_name,
-            {
-                "background": {
-                    "selected": ScrollbarColorKey.BACKGROUND.value,
-                    "active": ScrollbarColorKey.ARROW.value,
-                    "background": ScrollbarColorKey.BACKGROUND.value,
-                    "!focus": ScrollbarColorKey.BACKGROUND.value,
-                },
-                "arrowcolor": {
-                    "selected": ScrollbarColorKey.ARROW.value,
-                    "active": ScrollbarColorKey.BACKGROUND.value,
-                    "background": ScrollbarColorKey.BACKGROUND.value,
-                    "!focus": ScrollbarColorKey.ARROW.value,
-                },
-            },
-            default_style,
-        )
-
-    def recurse_menu(self, tkmenu: TKMenu):
-        """
-        Internal use only.
-
-        New and improved logic to change the theme of menus; we no longer take the lazy route of
-        re-declaring new menu elements with each theme change - a method which Tkinter has an upper limit
-        on. Rather, we recursively find and reconfigure the individual Menu objects that make up menus and
-        submenus.
-
-        :param tkmenu: The Tkinter menu object.
-        :return: None
-        """
-        end_menu_index = tkmenu.index("end")
-
-        # This fixes issue #8. Thank you, @richnanney for reporting!
-        if end_menu_index is None:
-            return
-
-        for index in range(0, end_menu_index + 1):
-            self.menu_entry(
-                tkmenu,
-                index,
-                {
-                    "foreground": "TEXT_INPUT",
-                    "background": "INPUT",
-                    "activeforeground": "INPUT",
-                    "activebackground": "TEXT_INPUT",
-                },
-            )
-
-        for child in tkmenu.children.values():
-            if issubclass(type(child), TKMenu):
-                self.recurse_menu(child)
-
-    def scrollable_column(self, column: sg.Column):
-        self._configure(
-            {"background": "BACKGROUND"},
-            column.TKColFrame.configure,
-            DEFAULT_ELEMENTS[sg.Column].TKColFrame.cget,
-        )
-        # Handle the inner frame if it exists
-        canvas = getattr(column.TKColFrame, "canvas", None)
-        if canvas and hasattr(canvas, "children") and "!frame" in canvas.children:
-            self._configure(
-                {"background": "BACKGROUND"},
-                canvas.children["!frame"].configure,
-                getattr(DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas")
-                .children.get("!frame")
-                .cget
-                if "!frame"
-                in getattr(
-                    DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas", {}
-                ).children
-                else lambda _: "white",
-            )
-
-    def combo(self, combo: sg.Combo):
-        # Configuring the listbox (popdown) of the combo.
-
-        combo.widget.tk.call(
-            "eval", f"set popdown [ttk::combobox::PopdownWindow {combo.widget}]"
-        )
-
-        def _configure_combo_popdown(**kwargs):
-            for attribute, value in kwargs.items():
-                combo.widget.tk.call(
-                    "eval", f"$popdown.f.l configure -{attribute} {value}"
-                )
-
-        self._configure(
-            {
-                "background": "INPUT",
-                "foreground": "TEXT_INPUT",
-                "selectforeground": "INPUT",
-                "selectbackground": "TEXT_INPUT",
-            },
-            _configure_combo_popdown,
-            _default_combo_popdown_cget,
-        )
-
-        # Configuring the combo itself.
-        style_name = combo.widget["style"]
-        self.style(
-            style_name,
-            {
-                "selectforeground": "TEXT_INPUT",
-                "selectbackground": "INPUT",
-                "selectcolor": "TEXT_INPUT",
-                "foreground": "TEXT_INPUT",
-                "background": ("BUTTON", 1),
-                "arrowcolor": ("BUTTON", 0),
-            },
-            _default_element_cget(sg.Combo, "style"),
-        )
-        self.map(
-            style_name,
-            {
-                "foreground": {"readonly": "TEXT_INPUT"},
-                "fieldbackground": {"readonly": "INPUT"},
-            },
-            _default_element_cget(sg.Combo, "style"),
-            True,
-        )
-
-    def checkbox_or_radio(self, element: Union[sg.Checkbox, sg.Radio]):
-        element_type = type(element)
-        toggle = (
-            _get_checkbox_radio_selectcolor(
-                self._color(
-                    "BACKGROUND",
-                    lambda: _default_element_cget(element_type, "selectcolor"),
-                ),
-                self._color(
-                    "TEXT",
-                    lambda: _default_element_cget(element_type, "selectcolor"),
-                ),
-            ),
-        )
-        element.widget.configure(
-            {"selectcolor": toggle}
-        )  # A rare case where we use the configure method directly.
-        self.element(
-            element,
-            {
-                "background": "BACKGROUND",
-                "foreground": "TEXT",
-                "activebackground": "BACKGROUND",
-                "activeforeground": "TEXT",
-            },
-        )
-
-    def table_or_tree(self, element: Union[sg.Table, sg.Tree]):
-        style_name = element.widget["style"]
-        element_type = type(element)
-        default_style = element.widget.winfo_class()
-        self.style(
-            style_name,
-            {
-                "foreground": "TEXT",
-                "background": "BACKGROUND",
-                "fieldbackground": "BACKGROUND",
-                "fieldcolor": "TEXT",
-            },
-            default_style,
-            fallback="white",
-        )
-        self.map(
-            style_name,
-            {
-                "foreground": {
-                    "selected": ("BUTTON", 0),
-                },
-                "background": {
-                    "selected": ("BUTTON", 1),
-                },
-            },
-            default_style,
-            True,
-            fallback="white",
-        )
-        self.style(
-            f"{style_name}.Heading",
-            {
-                "foreground": "TEXT_INPUT",
-                "background": "INPUT",
-            },
-            f"{default_style}.Heading",
-        )
-
-        if element_type == sg.Table:
-            self.map(
-                f"{style_name}.Heading",
-                {
-                    "foreground": {"active": "INPUT"},
-                    "background": {"active": "TEXT_INPUT"},
-                },
-                f"{default_style}.Heading",
-                True,
-            )
-
-    def progressbar(self, element: sg.ProgressBar):
-        style_name = element.ttk_style_name
-        self.style(
-            style_name,
-            {"background": ("PROGRESS", 0), "troughcolor": ("PROGRESS", 1)},
-            _default_element_cget(sg.ProgressBar, "style"),
-        )
