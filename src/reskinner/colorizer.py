@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
 
 from colour import Color  # type: ignore[import-untyped]
 
-from ._compat import Literal
+from ._compat import Literal, Type
 from .constants import LRU_MAX_SIZE, ScrollbarColorKey
 from .default_window import DEFAULT_ELEMENTS, DEFAULT_WINDOW
 from .easing import EasingName, ease
