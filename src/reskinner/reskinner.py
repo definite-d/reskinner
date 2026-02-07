@@ -27,7 +27,7 @@ def reskin(
     set_future: bool = True,
     reskin_background: bool = True,
     duration: float = 0,
-    interpolation_mode: Literal["hsl", "hue", "rgb"] = "rgb",
+    interpolation_mode: Literal["hsl", "hue", "rgb"] = "rgb",  # noqa: F821
     easing_function: Optional[Union[EasingName, Callable[[float], float]]] = None,
 ) -> None:
     """Apply a new theme to a PySimpleGUI or FreeSimpleGUI window with optional animation.
