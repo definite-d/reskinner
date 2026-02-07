@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from tkinter import Frame as TKFrame
-from tkinter import Menu as TKMenu
 from tkinter import Widget
 from tkinter.ttk import Style
 from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
@@ -10,7 +8,7 @@ from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
 from colour import Color  # type: ignore[import-untyped]
 
 from ._compat import Literal, Type
-from .constants import LRU_MAX_SIZE, ScrollbarColorKey
+from .constants import LRU_MAX_SIZE
 from .default_window import DEFAULT_ELEMENTS, DEFAULT_WINDOW
 from .easing import EasingName, ease
 from .interpolation import INTERPOLATION_MODES, InterpolationMethod
@@ -196,7 +194,7 @@ class Colorizer:
         self,
         old_theme_dict: ThemeDict,
         new_theme_dict: ThemeDict,
-        interpolation_mode: Literal["hsl", "hue", "rgb"] = "rgb",
+        interpolation_mode: Literal["hsl", "hue", "rgb"] = "rgb",  # noqa: F821
         easing_function: Optional[Union[EasingName, Callable[[float], float]]] = None,
         progress: float = 0,
     ):
