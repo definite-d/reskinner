@@ -176,7 +176,7 @@ class ElementReskinner:
             self._parent_row_frame(
                 element.ParentRowFrame, {"background": ("BUTTON", 1)}
             )
-        self.titlebar_row_frame = str(element.ParentRowFrame)
+        self._titlebar_row_frame = str(element.ParentRowFrame)
 
     def _reskin_titlebar_child(self, element: sg.Element):
         self._parent_row_frame(element.ParentRowFrame, {"background": ("BUTTON", 1)})
