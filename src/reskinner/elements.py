@@ -130,7 +130,7 @@ class ElementReskinner:
         ):
             self._parent_row_frame(element.ParentRowFrame, {"background": "BACKGROUND"})
 
-        if "background" in element.widget.keys() and element.widget.cget("background"):
+        if element.widget and "background" in element.widget.keys() and element.widget.cget("background"):
             self.colorizer.element(element, {"background": "BACKGROUND"})
 
     def _handle_right_click_menus(self, element: sg.Element) -> None:
