@@ -87,15 +87,9 @@ class ElementReskinner:
             lambda e: str(e.widget).startswith(f"{self._titlebar_row_frame}."),
             self._reskin_titlebar_child,
         )
-        self._dispatcher.register_conditional(
-            lambda e: (
-                is_element_type(e, sg.Column)
-                and (getattr(e, "TKColFrame", "Not Set") != "Not Set")
-            ),
-            self._reskin_scrollable_column,
-        )
 
         # Type-specific handlers
+        self._dispatcher.register_type(sg.Column, self._reskin_column)
         self._dispatcher.register_type(sg.Button, self._reskin_button)
         self._dispatcher.register_type(sg.ButtonMenu, self._reskin_buttonmenu)
         self._dispatcher.register_type(sg.Canvas, self._reskin_canvas)
@@ -236,11 +230,40 @@ class ElementReskinner:
     def _reskin_canvas(self, element: sg.Canvas):
         self.colorizer.element(element, {"highlightbackground": "BACKGROUND"})
 
-    def _reskin_scrollable_column(self, element: sg.Column):
-        if hasattr(
-            element.TKColFrame, "canvas"
-        ):  # This means the column is scrollable.
-            self._scrollable_column(element)
+    def _reskin_column(self, element: sg.Column):
+        # Apply background color to the Column's frame
+        self.colorizer.configure(
+            {"background": "BACKGROUND"},
+            element.TKColFrame.configure,
+            element.TKColFrame.cget
+        )
+        
+        # Handle scrollable column inner frame if it exists
+        canvas = getattr(element.TKColFrame, "canvas", None)
+        if canvas and hasattr(canvas, "children") and "!frame" in canvas.children:
+            self.colorizer.configure(
+                {"background": "BACKGROUND"},
+                canvas.children["!frame"].configure,
+                getattr(DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas")
+                .children.get("!frame")
+                .cget
+                if "!frame"
+                in getattr(
+                    DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas", {}
+                ).children
+                else lambda _: "white",
+            )
+        
+        if self._is_pin_created_column(element):
+            # Apply background to all child frames for columns created by sg.pin to fix the single pixel issue.
+            for child in element.TKColFrame.winfo_children():
+                if child.winfo_class() == 'Frame':
+                    if self._is_empty_pin_frame(child):
+                        self.colorizer.configure(
+                            {"background": "BACKGROUND"},
+                            child.configure,
+                            child.cget
+                        )
 
     def _reskin_combo(self, element: sg.Combo):
         # Configuring the listbox (popdown) of the combo.
@@ -535,6 +558,20 @@ class ElementReskinner:
                 ).children
                 else lambda _: "white",
             )
+
+    def _is_pin_created_column(self, element: sg.Column) -> bool:
+        """Check if this column was created by sg.pin() by examining its structure."""
+        # sg.pin() creates columns with no key (None) and specific layout structure
+        return element.Key is None and hasattr(element, 'TKColFrame')
+
+    def _is_empty_pin_frame(self, frame) -> bool:
+        """Check if this frame is an empty column created by sg.pin(shrink=True)."""
+        try:
+            # Empty pin frames have minimal children (usually just the empty column structure)
+            children = frame.winfo_children()
+            return len(children) <= 1  # Empty or nearly empty frames
+        except Exception:
+            return False
 
     def _menu_entry(
         self,
