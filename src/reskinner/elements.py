@@ -10,7 +10,7 @@ from .colorizer import (
     _default_element_cget,
     _get_checkbox_radio_selectcolor,
 )
-from .constants import ALTER_MENU_ACTIVE_COLORS, ScrollbarColorKey, is_element_type
+from .constants import ALTER_MENU_ACTIVE_COLORS, ScrollbarColorKey
 from .default_window import DEFAULT_ELEMENTS
 from .sg import sg
 
