@@ -122,7 +122,8 @@ def reskin(
                     window.refresh()  # Ensure UI updates during animation
                 except TclError as e:
                     if "invalid command name" in str(e):
-                        warn("Window was closed during reskinning")
+                        message = "Window was closed during reskinning"
+                        warn(message)
                         return
                     raise  # Re-raise other TclErrors
 
