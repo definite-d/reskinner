@@ -17,6 +17,9 @@ T = TypeVar("T", bound=sg.Element)
 # Type alias for element filter function
 ElementFilter = Callable[[T], bool]
 
+# Element reskinner instance
+element_reskinner = ElementReskinner()
+
 
 def reskin(
     window: sg.Window,
@@ -165,8 +168,7 @@ def _reskin(
         else window.element_list()
     )
 
-    # Element reskinner instance
-    element_reskinner = ElementReskinner(colorizer)
+    element_reskinner.update_colorizer(colorizer)
 
     # Per-element changes happen henceforth
     for element in whitelist:

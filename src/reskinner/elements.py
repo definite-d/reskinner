@@ -59,7 +59,9 @@ class ElementDispatcher:
             handler(element)
 
 class ElementReskinner:
-    def __init__(self, colorizer: Colorizer):
+    colorizer: Colorizer
+    
+    def __init__(self, colorizer: Colorizer | None = None):
         """
         Initializes an ElementReskinner instance.
 
@@ -67,9 +69,11 @@ class ElementReskinner:
         :type colorizer: Colorizer
         """
         self._titlebar_row_frame = "Not Set"
-        self.colorizer: Colorizer = colorizer
         self._dispatcher = ElementDispatcher()
         self._register_handlers()
+
+    def update_colorizer(self, colorizer: Colorizer):
+        self.colorizer = colorizer
 
     def _register_handlers(self) -> None:
         """Register all element handlers."""
