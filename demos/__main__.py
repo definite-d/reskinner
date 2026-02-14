@@ -37,6 +37,10 @@ def run_demo(file_name):
     spec = importlib.util.spec_from_file_location(
         file_name.rstrip(".py"), str(demo_path)
     )
+    if spec is None:
+        print(f"Demo file not found: {demo_path}")
+        return
+        
     demo_module = importlib.util.module_from_spec(spec)
     try:
         spec.loader.exec_module(demo_module)
