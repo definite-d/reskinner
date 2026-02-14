@@ -84,7 +84,11 @@ class ElementReskinner:
             self._reskin_custom_titlebar,
         )
         self._dispatcher.register_conditional(
-            lambda e: str(e.widget).startswith(f"{self._titlebar_row_frame}."),
+            lambda e: (
+                self._titlebar_row_frame != "Not Set"
+                and hasattr(e, 'widget')
+                and str(e.widget).startswith(f"{self._titlebar_row_frame}.")
+            ),
             self._reskin_titlebar_child,
         )
 
