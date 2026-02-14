@@ -42,20 +42,21 @@ class ElementDispatcher:
 
     def dispatch(self, element) -> None:
         """Dispatch element to all appropriate handlers."""
-        # Apply generic handlers first
-        for handler in self._generic_handlers:
-            handler(element)
+        # Add generic handlers first
+        handlers = self._generic_handlers.copy()
 
-        # Apply type-specific handlers
-        for type_class, handlers in self._type_handlers.items():
-            if isinstance(element, type_class):
-                for handler in handlers:
-                    handler(element)
+        # Add type-specific handlers
+        for t in reversed(type(element).mro()):
+            if t in self._type_handlers:
+                handlers.extend(self._type_handlers[t])
 
         # Apply conditional handlers
         for condition, handler in self._conditional_handlers:
             if condition(element):
-                handler(element)
+                handlers.append(handler)
+
+        for handler in handlers:
+            handler(element)
 
 class ElementReskinner:
     def __init__(self, colorizer: Colorizer):
