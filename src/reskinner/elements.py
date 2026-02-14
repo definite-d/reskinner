@@ -42,24 +42,27 @@ class ElementDispatcher:
 
     def dispatch(self, element) -> None:
         """Dispatch element to all appropriate handlers."""
-        # Apply generic handlers first
-        for handler in self._generic_handlers:
-            handler(element)
+        # Add generic handlers first
+        handlers = self._generic_handlers.copy()
+
+        # Add type-specific handlers
+        for t in reversed(type(element).mro()):
+            if t in self._type_handlers:
+                handlers.extend(self._type_handlers[t])
 
         # Apply conditional handlers
         for condition, handler in self._conditional_handlers:
             if condition(element):
-                handler(element)
+                handlers.append(handler)
 
-        # Apply type-specific handlers
-        for type_class, handlers in self._type_handlers.items():
-            if isinstance(element, type_class):
-                for handler in handlers:
-                    handler(element)
+        for handler in handlers:
+            handler(element)
 
 
 class ElementReskinner:
-    def __init__(self, colorizer: Colorizer):
+    colorizer: Colorizer
+
+    def __init__(self, colorizer: Colorizer | None = None):
         """
         Initializes an ElementReskinner instance.
 
@@ -67,9 +70,11 @@ class ElementReskinner:
         :type colorizer: Colorizer
         """
         self._titlebar_row_frame = "Not Set"
-        self.colorizer: Colorizer = colorizer
         self._dispatcher = ElementDispatcher()
         self._register_handlers()
+
+    def update_colorizer(self, colorizer: Colorizer):
+        self.colorizer = colorizer
 
     def _register_handlers(self) -> None:
         """Register all element handlers."""
@@ -84,7 +89,11 @@ class ElementReskinner:
             self._reskin_custom_titlebar,
         )
         self._dispatcher.register_conditional(
-            lambda e: str(e.widget).startswith(f"{self._titlebar_row_frame}."),
+            lambda e: (
+                self._titlebar_row_frame != "Not Set"
+                and hasattr(e, "widget")
+                and str(e.widget).startswith(f"{self._titlebar_row_frame}.")
+            ),
             self._reskin_titlebar_child,
         )
 
@@ -124,7 +133,11 @@ class ElementReskinner:
         ):
             self._parent_row_frame(element.ParentRowFrame, {"background": "BACKGROUND"})
 
-        if element.widget and "background" in element.widget.keys() and element.widget.cget("background"):
+        if (
+            element.widget
+            and "background" in element.widget.keys()
+            and element.widget.cget("background")
+        ):
             self.colorizer.element(element, {"background": "BACKGROUND"})
 
     def _handle_right_click_menus(self, element: sg.Element) -> None:
@@ -235,9 +248,9 @@ class ElementReskinner:
         self.colorizer.configure(
             {"background": "BACKGROUND"},
             element.TKColFrame.configure,
-            element.TKColFrame.cget
+            element.TKColFrame.cget,
         )
-        
+
         # Handle scrollable column inner frame if it exists
         canvas = getattr(element.TKColFrame, "canvas", None)
         if canvas and hasattr(canvas, "children") and "!frame" in canvas.children:
@@ -253,16 +266,14 @@ class ElementReskinner:
                 ).children
                 else lambda _: "white",
             )
-        
+
         if self._is_pin_created_column(element):
             # Apply background to all child frames for columns created by sg.pin to fix the single pixel issue.
             for child in element.TKColFrame.winfo_children():
-                if child.winfo_class() == 'Frame':
+                if child.winfo_class() == "Frame":
                     if self._is_empty_pin_frame(child):
                         self.colorizer.configure(
-                            {"background": "BACKGROUND"},
-                            child.configure,
-                            child.cget
+                            {"background": "BACKGROUND"}, child.configure, child.cget
                         )
 
     def _reskin_combo(self, element: sg.Combo):
@@ -562,7 +573,7 @@ class ElementReskinner:
     def _is_pin_created_column(self, element: sg.Column) -> bool:
         """Check if this column was created by sg.pin() by examining its structure."""
         # sg.pin() creates columns with no key (None) and specific layout structure
-        return element.Key is None and hasattr(element, 'TKColFrame')
+        return element.Key is None and hasattr(element, "TKColFrame")
 
     def _is_empty_pin_frame(self, frame) -> bool:
         """Check if this frame is an empty column created by sg.pin(shrink=True)."""

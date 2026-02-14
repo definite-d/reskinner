@@ -17,6 +17,9 @@ T = TypeVar("T", bound=sg.Element)
 # Type alias for element filter function
 ElementFilter = Callable[[T], bool]
 
+# Element reskinner instance
+element_reskinner = ElementReskinner()
+
 
 def reskin(
     window: sg.Window,
@@ -119,7 +122,8 @@ def reskin(
                     window.refresh()  # Ensure UI updates during animation
                 except TclError as e:
                     if "invalid command name" in str(e):
-                        warn("Window was closed during reskinning")
+                        message = "Window was closed during reskinning"
+                        warn(message)
                         return
                     raise  # Re-raise other TclErrors
 
@@ -165,8 +169,7 @@ def _reskin(
         else window.element_list()
     )
 
-    # Element reskinner instance
-    element_reskinner = ElementReskinner(colorizer)
+    element_reskinner.update_colorizer(colorizer)
 
     # Per-element changes happen henceforth
     for element in whitelist:
