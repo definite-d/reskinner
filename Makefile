@@ -1,52 +1,36 @@
-# bump and tag version
-bump-patch:
-	@echo "Updating patch version..."
-	bumpver update --patch
+.PHONY: changelog lint release
 
-bump-minor:
-	@echo "Updating minor version..."
-	bumpver update --minor
-
-bump-major:
-	@echo "Updating major version..."
-	bumpver update --major
-
-# generate changelog since last version tag
+# Generate changelog since last version tag
 changelog:
-	@tag=$$(git describe --tags --match 'v[0-9]*.[0-9]*.[0-9]*' --abbrev=0) && \
+	@tag=$$(git tag --sort=-version:refname --list 'v[0-9]*.[0-9]*.[0-9]*' | head -1) && \
 	echo "## Changelog since $$tag" && \
 	echo "" && \
 	git log --oneline $$tag..HEAD | sed 's/^/- /'
 
-# run linting checks
+# Run linting checks
 lint:
 	@echo "Running linting checks..."
-	uv run ruff check . --diff
+	@uv run ruff check . --diff
 
-# push tag and create PR (for when we've already bumped the version)
-push-release:
-	@echo "Creating release tag with v prefix..."
-	@CURRENT_VERSION=$$(uv run bumpver show | grep "Current Version:" | cut -d' ' -f3); \
-	git tag "v$$CURRENT_VERSION"; \
-	echo "Pushing tags to trigger build..."; \
-	git push origin --tags; \
-	echo "Creating PR to sync dev to main..."; \
-	if gh pr view --base main --head dev > /dev/null 2>&1; then \
-		echo "PR already exists. Skipping PR creation."; \
-	else \
-		gh pr create --base main --head dev --title "Sync dev to main after release" --body "Automated PR to sync dev branch changes to main after release v$$CURRENT_VERSION\n\n## Changelog\n$$(make changelog)"; \
-	fi; \
-	echo "Release pushed successfully!"
-
-# create release with specified level: make release LEVEL=patch|minor|major
+# Create a release. Usage: make release LEVEL=patch|minor|major
 release: lint
-	@echo "Creating release..."
-	@echo "Changelog for this release:" && \
-	$(MAKE) changelog
-	@read -p "Continue with release? [y/N] " confirm && \
-	if [ "$$confirm" != "y" ] && [ "$$confirm" != "Y" ]; then \
-		echo "Release cancelled."; exit 1; \
+	@if [ -z "$(LEVEL)" ]; then \
+		echo "Error: LEVEL is required. Usage: make release LEVEL=patch|minor|major"; \
+		exit 1; \
 	fi
-	@echo "Updating $(LEVEL) version..."
-	bumpver update --$(LEVEL)
-	$(MAKE) push-release
+	@CHANGELOG=$$($(MAKE) --no-print-directory changelog) && \
+	echo "$$CHANGELOG" && \
+	echo "Updating $(LEVEL) version..." && \
+	uv run bumpver update --$(LEVEL) && \
+	CURRENT_VERSION=$$(uv run bumpver show | grep "Current Version:" | cut -d' ' -f3) && \
+	echo "Creating release tag v$$CURRENT_VERSION..." && \
+	git tag "v$$CURRENT_VERSION" && \
+	git push origin --tags && \
+	if gh pr view --base main --head dev > /dev/null 2>&1; then \
+		echo "PR already exists, skipping PR creation."; \
+	else \
+		gh pr create --base main --head dev \
+			--title "Sync dev to main after release v$$CURRENT_VERSION" \
+			--body "$$(printf '%s' "$$CHANGELOG")"; \
+	fi && \
+	echo "Release pushed successfully!"
