@@ -1,19 +1,16 @@
-.PHONY: changelog lint release
+.PHONY: changelog lint release help
 
-# Generate changelog since last version tag
-changelog:
+changelog: ## Show changelog since last version tag
 	@tag=$$(git tag --sort=-version:refname --list 'v[0-9]*.[0-9]*.[0-9]*' | head -1) && \
 	echo "## Changelog since $$tag" && \
 	echo "" && \
 	git log --oneline $$tag..HEAD | sed 's/^/- /'
 
-# Run linting checks
-lint:
+lint: ## Run linting checks
 	@echo "Running linting checks..."
 	@uv run ruff check . --diff
 
-# Create a release. Usage: make release LEVEL=patch|minor|major
-release: lint
+release: lint ## Create a release. Usage: make release LEVEL=patch|minor|major
 	@if [ -z "$(LEVEL)" ]; then \
 		echo "Error: LEVEL is required. Usage: make release LEVEL=patch|minor|major"; \
 		exit 1; \
@@ -34,3 +31,9 @@ release: lint
 			--body "$$(printf '%s' "$$CHANGELOG")"; \
 	fi && \
 	echo "Release pushed successfully!"
+
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | \
+		awk 'BEGIN {FS = ":.*##"}; {printf "  %-20s %s\n", $$1, $$2}'
+
+.DEFAULT_GOAL := help
