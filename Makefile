@@ -26,7 +26,7 @@ lint:
 push-release:
 	@echo "Creating release tag with v prefix..."
 	@CURRENT_VERSION=$$(uv run bumpver show | grep "Current Version:" | cut -d' ' -f3); \
-	git tag "v$$CURRENT_VERSION" $$CURRENT_VERSION; \
+	git tag "v$$CURRENT_VERSION"; \
 	echo "Pushing tags to trigger build..."; \
 	git push origin --tags; \
 	echo "Creating PR to sync dev to main..."; \
