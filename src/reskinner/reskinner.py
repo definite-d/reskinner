@@ -18,7 +18,7 @@ T = TypeVar("T", bound=sg.Element)
 ElementFilter = Callable[[T], bool]
 
 # Element reskinner instance
-element_reskinner = ElementReskinner()
+_element_reskinner = ElementReskinner()
 
 
 def reskin(
@@ -169,11 +169,11 @@ def _reskin(
         else window.element_list()
     )
 
-    element_reskinner.update_colorizer(colorizer)
+    _element_reskinner.update_colorizer(colorizer)
 
     # Per-element changes happen henceforth
     for element in whitelist:
-        element_reskinner.reskin_element(element)
+        _element_reskinner.reskin_element(element)
 
 
 def toggle_transparency(window: sg.Window) -> None:
