@@ -13,9 +13,10 @@ bump-major:
 
 # generate changelog since last version tag
 changelog:
-	@echo "## Changelog since $(shell git describe --tags --match 'v[0-9]*.[0-9]*.[0-9]*' --abbrev=0)" && \
+	@tag=$$(git describe --tags --match 'v[0-9]*.[0-9]*.[0-9]*' --abbrev=0) && \
+	echo "## Changelog since $$tag" && \
 	echo "" && \
-	git log --oneline $(shell git describe --tags --match 'v[0-9]*.[0-9]*.[0-9]*' --abbrev=0)..HEAD | sed 's/^/- /'
+	git log --oneline $$tag..HEAD | sed 's/^/- /'
 
 # run linting checks
 lint:
