@@ -42,11 +42,8 @@ def run_demo(file_name):
         return
 
     demo_module = importlib.util.module_from_spec(spec)
-    try:
-        spec.loader.exec_module(demo_module)
-        demo_module.main()
-    except Exception as e:
-        print(f"Error running demo '{file_name}':\n{e}")
+    spec.loader.exec_module(demo_module)
+    demo_module.main()
 
 
 def show_gui_and_launch():
