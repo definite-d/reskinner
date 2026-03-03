@@ -44,19 +44,13 @@ EASING_FUNCTIONS: Dict[str, Callable[[float], float]] = {
     "ease_in_out_sine": lambda x: -(cos(pi * x) - 1) / 2,
     "ease_in_quad": lambda x: x**2,
     "ease_out_quad": lambda x: 1 - (1 - x) ** 2,
-    "ease_in_out_quad": lambda x: (
-        2 * x * x if x < 0.5 else 1 - ((-2 * x + 2) ** 2) / 2
-    ),
+    "ease_in_out_quad": lambda x: 2 * x * x if x < 0.5 else 1 - ((-2 * x + 2) ** 2) / 2,
     "ease_in_cubic": lambda x: x**3,
     "ease_out_cubic": lambda x: 1 - (1 - x) ** 3,
-    "ease_in_out_cubic": lambda x: (
-        4 * x**3 if x < 0.5 else 1 - ((-2 * x + 2) ** 3) / 2
-    ),
+    "ease_in_out_cubic": lambda x: 4 * x**3 if x < 0.5 else 1 - ((-2 * x + 2) ** 3) / 2,
     "ease_in_quart": lambda x: x**4,
     "ease_out_quart": lambda x: 1 - (1 - x) ** 4,
-    "ease_in_out_quart": lambda x: (
-        8 * x**4 if x < 0.5 else 1 - ((-2 * x + 2) ** 4) / 2
-    ),
+    "ease_in_out_quart": lambda x: 8 * x**4 if x < 0.5 else 1 - ((-2 * x + 2) ** 4) / 2,
     "ease_in_quint": lambda x: x**5,
     "ease_out_quint": lambda x: 1 - (1 - x) ** 5,
     "ease_in_out_quint": lambda x: (
