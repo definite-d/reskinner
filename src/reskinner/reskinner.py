@@ -196,4 +196,4 @@ def toggle_transparency(window: sg.Window) -> None:
     except TclError as e:
         if "unknown color name" in str(e):
             raise ValueError(f"Invalid color value: {window_bg}") from e
-        raise  # Re-raise other TclErrors
+        raise e  # Re-raise other TclErrors

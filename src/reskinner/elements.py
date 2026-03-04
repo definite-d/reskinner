@@ -1,5 +1,5 @@
 from tkinter import Frame as TKFrame
-from tkinter import Menu as TKMenu
+from tkinter import Menu as TKMenu, Canvas as TKCanvas
 from tkinter.ttk import Widget as TTKWidget
 from typing import Callable, Dict, List, Tuple, Type, Union
 
@@ -244,37 +244,25 @@ class ElementReskinner:
         self.colorizer.element(element, {"highlightbackground": "BACKGROUND"})
 
     def _reskin_column(self, element: sg.Column):
-        # Apply background color to the Column's frame
-        self.colorizer.configure(
-            {"background": "BACKGROUND"},
-            element.TKColFrame.configure,
-            element.TKColFrame.cget,
-        )
+        # Handle hidden columns.
+        if not element.widget:
+            return
 
-        # Handle scrollable column inner frame if it exists
-        canvas = getattr(element.TKColFrame, "canvas", None)
-        if canvas and hasattr(canvas, "children") and "!frame" in canvas.children:
+        def _configure_child(child: TKFrame | TKCanvas):
             self.colorizer.configure(
-                {"background": "BACKGROUND"},
-                canvas.children["!frame"].configure,
-                getattr(DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas")
-                .children.get("!frame")
-                .cget
-                if "!frame"
-                in getattr(
-                    DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas", {}
-                ).children
-                else lambda _: "white",
+                {"background": "BACKGROUND", "highlightbackground": "BACKGROUND"},
+                child.configure,
+                child.cget,
             )
-
-        if self._is_pin_created_column(element):
-            # Apply background to all child frames for columns created by sg.pin to fix the single pixel issue.
-            for child in element.TKColFrame.winfo_children():
-                if child.winfo_class() == "Frame":
-                    if self._is_empty_pin_frame(child):
-                        self.colorizer.configure(
-                            {"background": "BACKGROUND"}, child.configure, child.cget
-                        )
+    
+        for child in filter(
+            lambda e: isinstance(e, (TKFrame, TKCanvas)),
+            element.widget.winfo_children(),
+        ):
+            _configure_child(child)
+            if isinstance(child, TKCanvas):
+                # Scrollable column - configure the canvas and its inner frame
+                _configure_child(child.children["!frame"])
 
     def _reskin_combo(self, element: sg.Combo):
         # Configuring the listbox (popdown) of the combo.
@@ -547,42 +535,6 @@ class ElementReskinner:
         for child in tkmenu.children.values():
             if issubclass(type(child), TKMenu):
                 self._recurse_menu(child)
-
-    def _scrollable_column(self, column: sg.Column):
-        self.colorizer.configure(
-            {"background": "BACKGROUND"},
-            column.TKColFrame.configure,
-            DEFAULT_ELEMENTS[sg.Column].TKColFrame.cget,
-        )
-        # Handle the inner frame if it exists
-        canvas = getattr(column.TKColFrame, "canvas", None)
-        if canvas and hasattr(canvas, "children") and "!frame" in canvas.children:
-            self.colorizer.configure(
-                {"background": "BACKGROUND"},
-                canvas.children["!frame"].configure,
-                getattr(DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas")
-                .children.get("!frame")
-                .cget
-                if "!frame"
-                in getattr(
-                    DEFAULT_ELEMENTS[sg.Column].TKColFrame, "canvas", {}
-                ).children
-                else lambda _: "white",
-            )
-
-    def _is_pin_created_column(self, element: sg.Column) -> bool:
-        """Check if this column was created by sg.pin() by examining its structure."""
-        # sg.pin() creates columns with no key (None) and specific layout structure
-        return element.Key is None and hasattr(element, "TKColFrame")
-
-    def _is_empty_pin_frame(self, frame) -> bool:
-        """Check if this frame is an empty column created by sg.pin(shrink=True)."""
-        try:
-            # Empty pin frames have minimal children (usually just the empty column structure)
-            children = frame.winfo_children()
-            return len(children) <= 1  # Empty or nearly empty frames
-        except Exception:
-            return False
 
     def _menu_entry(
         self,
