@@ -5,7 +5,7 @@ from tkinter import Widget
 from tkinter.ttk import Style
 from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
 
-from colour import Color  # type: ignore[import-untyped]
+from colour import Color
 
 from ._compat import Literal, Type
 from .constants import LRU_MAX_SIZE
