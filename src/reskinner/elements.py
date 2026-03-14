@@ -254,7 +254,7 @@ class ElementReskinner:
                 child.configure,
                 child.cget,
             )
-    
+
         for child in filter(
             lambda e: isinstance(e, (TKFrame, TKCanvas)),
             element.widget.winfo_children(),
