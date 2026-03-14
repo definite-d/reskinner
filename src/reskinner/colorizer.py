@@ -17,7 +17,14 @@ from .sg import sg
 # Type variables and aliases
 T = TypeVar("T")
 ColorType = Union[str, Tuple[float, float, float], Tuple[float, float, float, float]]
-ThemeDict = Dict[str, Union[str, int, Tuple[str, str]]]
+ThemeDict = Dict[
+    str,
+    Union[
+        Dict[str, Union[str, Tuple[str, str], int]],
+        Dict[str, Union[str, int]],
+        Dict[str, Union[str, Tuple[str, str], int, list[str]]],
+    ],
+]
 ThemeDictColorKey = Union[str, Tuple[str, int]]
 ThemeConfiguration = Dict[str, ThemeDictColorKey]
 ElementFilter = Callable[[sg.Element], bool]  # type: ignore[valid-type]
