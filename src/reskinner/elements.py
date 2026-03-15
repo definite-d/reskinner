@@ -444,7 +444,6 @@ class ElementReskinner:
 
     def _reskin_table(self, element: Union[sg.Table, sg.Tree]):
         style_name = element.widget["style"]
-        element_type = type(element)
         default_style = element.widget.winfo_class()
         self.colorizer.style(
             style_name,
@@ -480,7 +479,7 @@ class ElementReskinner:
             f"{default_style}.Heading",
         )
 
-        if element_type == sg.Table:
+        if isinstance(element, sg.Table):
             self.colorizer.map(
                 f"{style_name}.Heading",
                 {
