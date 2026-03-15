@@ -76,7 +76,17 @@ def main():
         ],
         [
             name("Table"),
-            sg.Table([[1, 2, 3], [4, 5, 6]], ["Col 1", "Col 2", "Col 3"], num_rows=2),
+            sg.Table(
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]],
+                ["Col 1", "Col 2", "Col 3"],
+                num_rows=6,
+                auto_size_columns=True,
+                justification="left",
+                select_mode="extended",
+                size=(None, 10),
+                expand_x=True,
+                expand_y=True,
+            ),
         ],
         [name("Tree"), sg.Tree(treedata, ["Heading"], num_rows=3)],
         [name("Horizontal Separator"), sg.HSep()],

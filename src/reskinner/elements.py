@@ -1,3 +1,4 @@
+from functools import partial
 from tkinter import Frame as TKFrame
 from tkinter import Menu as TKMenu, Canvas as TKCanvas
 from tkinter.ttk import Widget as TTKWidget
@@ -254,7 +255,7 @@ class ElementReskinner:
                 child.configure,
                 child.cget,
             )
-    
+
         for child in filter(
             lambda e: isinstance(e, (TKFrame, TKCanvas)),
             element.widget.winfo_children(),
@@ -392,11 +393,11 @@ class ElementReskinner:
         element_type = type(element)
         toggle = (
             _get_checkbox_radio_selectcolor(
-                self.colorizer._color(
+                self.colorizer.color(
                     "BACKGROUND",
                     lambda: _default_element_cget(element_type, "selectcolor"),
                 ),
-                self.colorizer._color(
+                self.colorizer.color(
                     "TEXT",
                     lambda: _default_element_cget(element_type, "selectcolor"),
                 ),
@@ -444,8 +445,11 @@ class ElementReskinner:
 
     def _reskin_table(self, element: Union[sg.Table, sg.Tree]):
         style_name = element.widget["style"]
-        element_type = type(element)
         default_style = element.widget.winfo_class()
+
+        def _default_color(attribute: str) -> str:
+            return self.colorizer.styler.lookup(default_style, attribute)
+
         self.colorizer.style(
             style_name,
             {
@@ -480,7 +484,7 @@ class ElementReskinner:
             f"{default_style}.Heading",
         )
 
-        if element_type == sg.Table:
+        if isinstance(element, sg.Table):
             self.colorizer.map(
                 f"{style_name}.Heading",
                 {
@@ -489,6 +493,30 @@ class ElementReskinner:
                 },
                 f"{default_style}.Heading",
                 True,
+            )
+
+            if (not element.tree_ids) or (not element.TKTreeview):
+                return
+
+            for row_id in element.tree_ids:
+                self.colorizer.configure(
+                    {"background": "BACKGROUND", "foreground": "TEXT"},
+                    partial(element.TKTreeview.tag_configure, row_id),
+                    _default_color,
+                )
+
+            # These have to be set for future elements added post-reskin
+            element.BackgroundColor = self.colorizer.color(
+                "BACKGROUND", lambda: _default_color("BACKGROUND")
+            )
+            element.TextColor = self.colorizer.color(
+                "TEXT", lambda: _default_color("TEXT")
+            )
+            element.HeaderBackgroundColor = self.colorizer.color(
+                "INPUT", lambda: _default_color("INPUT")
+            )
+            element.HeaderTextColor = self.colorizer.color(
+                "TEXT_INPUT", lambda: _default_color("TEXT_INPUT")
             )
 
     def _parent_row_frame(
@@ -564,7 +592,7 @@ class ElementReskinner:
         self.colorizer.configure(
             configuration,
             optionmenu.widget["menu"].configure,
-            _default_element_cget(sg.OptionMenu, "menu").cget,
+            lambda attribute: _default_element_cget(sg.Menu, attribute),
         )
 
     def _scrollbar(

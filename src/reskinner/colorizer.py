@@ -5,7 +5,7 @@ from tkinter import Widget
 from tkinter.ttk import Style
 from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
 
-from colour import Color  # type: ignore[import-untyped]
+from colour import Color
 
 from ._compat import Literal, Type
 from .constants import LRU_MAX_SIZE
@@ -17,7 +17,13 @@ from .sg import sg
 # Type variables and aliases
 T = TypeVar("T")
 ColorType = Union[str, Tuple[float, float, float], Tuple[float, float, float, float]]
-ThemeDict = Dict[str, Union[str, int, Tuple[str, str]]]
+ThemeDict = (
+    Union[
+        Dict[str, Union[str, Tuple[str, str], int]],
+        Dict[str, Union[str, int]],
+        Dict[str, Union[str, Tuple[str, str], int, list[str]]],
+    ],
+)
 ThemeDictColorKey = Union[str, Tuple[str, int]]
 ThemeConfiguration = Dict[str, ThemeDictColorKey]
 ElementFilter = Callable[[sg.Element], bool]  # type: ignore[valid-type]
@@ -205,7 +211,7 @@ class Colorizer:
         self.interpolate: InterpolationMethod = INTERPOLATION_MODES[interpolation_mode]
         self.easing_function = easing_function
 
-    def _color(
+    def color(
         self,
         key: ThemeDictColorKey,
         default_color_function: Callable[[], str],
@@ -244,7 +250,7 @@ class Colorizer:
         :return: None
         """
         _configurations = {
-            attribute: self._color(
+            attribute: self.color(
                 theme_dict_color_key, lambda: func_to_get_default_color(attribute)
             )
             for attribute, theme_dict_color_key in attributes_to_theme_dict_color_keys.items()
@@ -298,7 +304,7 @@ class Colorizer:
             configuration_key: [
                 (
                     k,
-                    self._color(
+                    self.color(
                         v,
                         lambda: self.styler.lookup(
                             default_style,
