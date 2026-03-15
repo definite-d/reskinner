@@ -446,7 +446,7 @@ class ElementReskinner:
     def _reskin_table(self, element: Union[sg.Table, sg.Tree]):
         style_name = element.widget["style"]
         default_style = element.widget.winfo_class()
-        
+
         def _default_color(attribute: str) -> str:
             return self.colorizer.styler.lookup(default_style, attribute)
 
@@ -497,7 +497,7 @@ class ElementReskinner:
 
             if (not element.tree_ids) or (not element.TKTreeview):
                 return
-            
+
             for row_id in element.tree_ids:
                 self.colorizer.configure(
                     {"background": "BACKGROUND", "foreground": "TEXT"},
