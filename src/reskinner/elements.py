@@ -490,6 +490,16 @@ class ElementReskinner:
                 True,
             )
 
+            if (not element.tree_ids) or (not element.TKTreeview):
+                return
+            
+            for row_id in element.tree_ids:
+                self.colorizer.configure(
+                    {"background": "BACKGROUND", "foreground": "TEXT"},
+                    partial(element.TKTreeview.tag_configure, row_id),
+                    lambda attribute: self.colorizer.styler.lookup(default_style, attribute),
+                )
+
     def _parent_row_frame(
         self,
         parent_row_frame: TKFrame,
