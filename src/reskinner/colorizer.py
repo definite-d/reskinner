@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from tkinter import Widget
 from tkinter.ttk import Style
-from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
+from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union, List
 
 from colour import Color
 
@@ -21,7 +21,7 @@ ThemeDict = (
     Union[
         Dict[str, Union[str, Tuple[str, str], int]],
         Dict[str, Union[str, int]],
-        Dict[str, Union[str, Tuple[str, str], int, list[str]]],
+        Dict[str, Union[str, Tuple[str, str], int, List[str]]],
     ],
 )
 ThemeDictColorKey = Union[str, Tuple[str, int]]
