@@ -2,7 +2,7 @@ from functools import partial
 from tkinter import Frame as TKFrame
 from tkinter import Menu as TKMenu, Canvas as TKCanvas
 from tkinter.ttk import Widget as TTKWidget
-from typing import Callable, Dict, List, Tuple, Type, Union
+from typing import Callable, Dict, List, Tuple, Type, Union, Optional
 
 from .colorizer import (
     Colorizer,
@@ -63,7 +63,7 @@ class ElementDispatcher:
 class ElementReskinner:
     colorizer: Colorizer
 
-    def __init__(self, colorizer: Colorizer | None = None):
+    def __init__(self, colorizer: Optional[Colorizer] = None):
         """
         Initializes an ElementReskinner instance.
 
@@ -249,7 +249,7 @@ class ElementReskinner:
         if not element.widget:
             return
 
-        def _configure_child(child: TKFrame | TKCanvas):
+        def _configure_child(child: Union[TKFrame, TKCanvas]):
             self.colorizer.configure(
                 {"background": "BACKGROUND", "highlightbackground": "BACKGROUND"},
                 child.configure,
