@@ -17,6 +17,9 @@ T = TypeVar("T", bound=sg.Element)
 # Type alias for element filter function
 ElementFilter = Callable[[T], bool]
 
+# Type alias for callbacks
+ElementCallback = Callable[[sg.Element, Colorizer], None]
+
 # Element reskinner instance
 _element_reskinner = ElementReskinner()
 
@@ -32,6 +35,8 @@ def reskin(
     duration: float = 0,
     interpolation_mode: Literal["hsl", "hue", "rgb"] = "rgb",  # noqa: F821
     easing_function: Optional[Union[EasingName, Callable[[float], float]]] = None,
+    before_element: Optional[ElementCallback] = None,
+    after_element: Optional[ElementCallback] = None,
 ) -> None:
     """Apply a new theme to a PySimpleGUI or FreeSimpleGUI window with optional animation.
 
@@ -60,6 +65,10 @@ def reskin(
     :type interpolation_mode: Literal["hsl", "hue", "rgb"]
     :param easing_function: Optional easing function or name used to shape the animation curve.
     :type easing_function: Optional[Union[EasingName, Callable[[float], float]]]
+    :param before_element: Optional callback called before reskinning each element.
+        Signature: (element, colorizer) -> None.
+    :param after_element: Optional callback called after reskinning each element.
+        Signature: (element, colorizer) -> None.
 
     :raises ValueError: If the specified theme is not found
     :raises TclError: For Tkinter-related errors
@@ -118,7 +127,14 @@ def reskin(
                     1.0, elapsed.total_seconds() / delta.total_seconds()
                 )
                 try:
-                    _reskin(colorizer, window, element_filter, reskin_background)
+                    _reskin(
+                        colorizer,
+                        window,
+                        element_filter,
+                        reskin_background,
+                        before_element,
+                        after_element,
+                    )
                     window.refresh()  # Ensure UI updates during animation
                 except TclError as e:
                     if "invalid command name" in str(e):
@@ -135,7 +151,14 @@ def reskin(
             raise
 
     colorizer.progress = 1
-    _reskin(colorizer, window, element_filter, reskin_background)
+    _reskin(
+        colorizer,
+        window,
+        element_filter,
+        reskin_background,
+        before_element,
+        after_element,
+    )
 
     if set_future:
         theme_function(new_theme)
@@ -146,6 +169,8 @@ def _reskin(
     window: sg.Window,
     element_filter: Optional[ElementFilter] = None,
     reskin_background: bool = True,
+    before_element: Optional[ElementCallback] = None,
+    after_element: Optional[ElementCallback] = None,
 ) -> None:
     """Handles the actual reskinning of window elements.
 
@@ -157,6 +182,8 @@ def _reskin(
     :type element_filter: Optional[ElementFilter]
     :param reskin_background: Whether to reskin the window background
     :type reskin_background: bool
+    :param before_element: Optional callback before each element is reskinned
+    :param after_element: Optional callback after each element is reskinned
     """
     # Window level changes
     if reskin_background:
@@ -173,7 +200,11 @@ def _reskin(
 
     # Per-element changes happen henceforth
     for element in whitelist:
+        if before_element:
+            before_element(element, colorizer)
         _element_reskinner.reskin_element(element)
+        if after_element:
+            after_element(element, colorizer)
 
 
 def toggle_transparency(window: sg.Window) -> None:
