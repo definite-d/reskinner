@@ -394,11 +394,11 @@ class ElementReskinner:
         element_type = type(element)
         toggle = (
             _get_checkbox_radio_selectcolor(
-                self.colorizer.color(
+                self.colorizer.theme_color(
                     "BACKGROUND",
                     lambda: _default_element_cget(element_type, "selectcolor"),
                 ),
-                self.colorizer.color(
+                self.colorizer.theme_color(
                     "TEXT",
                     lambda: _default_element_cget(element_type, "selectcolor"),
                 ),
@@ -507,16 +507,16 @@ class ElementReskinner:
                 )
 
             # These have to be set for future elements added post-reskin
-            element.BackgroundColor = self.colorizer.color(
+            element.BackgroundColor = self.colorizer.theme_color(
                 "BACKGROUND", lambda: _default_color("BACKGROUND")
             )
-            element.TextColor = self.colorizer.color(
+            element.TextColor = self.colorizer.theme_color(
                 "TEXT", lambda: _default_color("TEXT")
             )
-            element.HeaderBackgroundColor = self.colorizer.color(
+            element.HeaderBackgroundColor = self.colorizer.theme_color(
                 "INPUT", lambda: _default_color("INPUT")
             )
-            element.HeaderTextColor = self.colorizer.color(
+            element.HeaderTextColor = self.colorizer.theme_color(
                 "TEXT_INPUT", lambda: _default_color("TEXT_INPUT")
             )
 

@@ -207,7 +207,14 @@ class Colorizer:
         self.interpolate: InterpolationMethod = INTERPOLATION_MODES[interpolation_mode]
         self.easing_function = easing_function
 
-    def color(
+    def color(self, start: Union[str, Color], end: Union[str, Color]) -> str:
+        return self.interpolate(
+            Color(start),
+            Color(end),
+            ease(self.progress, self.easing_function),
+        ).get_hex_l()
+
+    def theme_color(
         self,
         key: ThemeDictColorKey,
         default_color_function: Callable[[], str],
@@ -229,9 +236,7 @@ class Colorizer:
         except ValueError:
             raise ValueError("The referenced theme_dict value is not a valid color.")
 
-        return self.interpolate(
-            start, end, ease(self.progress, self.easing_function)
-        ).get_hex_l()
+        return self.color(_start, _end)
 
     def configure(
         self,
@@ -246,7 +251,7 @@ class Colorizer:
         :return: None
         """
         _configurations = {
-            attribute: self.color(
+            attribute: self.theme_color(
                 theme_dict_color_key, lambda: func_to_get_default_color(attribute)
             )
             for attribute, theme_dict_color_key in attributes_to_theme_dict_color_keys.items()
@@ -300,7 +305,7 @@ class Colorizer:
             configuration_key: [
                 (
                     k,
-                    self.color(
+                    self.theme_color(
                         v,
                         lambda: self.styler.lookup(
                             default_style,
