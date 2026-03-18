@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 from functools import lru_cache
 from tkinter import Widget
 from tkinter.ttk import Style
-from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union, List
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
 
 from colour import Color
 
@@ -17,13 +15,11 @@ from .sg import sg
 # Type variables and aliases
 T = TypeVar("T")
 ColorType = Union[str, Tuple[float, float, float], Tuple[float, float, float, float]]
-ThemeDict = (
-    Union[
-        Dict[str, Union[str, Tuple[str, str], int]],
-        Dict[str, Union[str, int]],
-        Dict[str, Union[str, Tuple[str, str], int, List[str]]],
-    ],
-)
+ThemeDict = Union[
+    Dict[str, Union[str, Tuple[str, str], int]],
+    Dict[str, Union[str, int]],
+    Dict[str, Union[str, Tuple[str, str], int, List[str]]],
+]
 ThemeDictColorKey = Union[str, Tuple[str, int]]
 ThemeConfiguration = Dict[str, ThemeDictColorKey]
 ElementFilter = Callable[[sg.Element], bool]  # type: ignore[valid-type]
@@ -211,7 +207,14 @@ class Colorizer:
         self.interpolate: InterpolationMethod = INTERPOLATION_MODES[interpolation_mode]
         self.easing_function = easing_function
 
-    def color(
+    def color(self, start: Union[str, Color], end: Union[str, Color]) -> str:
+        return self.interpolate(
+            Color(start),
+            Color(end),
+            ease(self.progress, self.easing_function),
+        ).get_hex_l()
+
+    def theme_color(
         self,
         key: ThemeDictColorKey,
         default_color_function: Callable[[], str],
@@ -220,22 +223,23 @@ class Colorizer:
             start, end = self.old_theme_dict[key], self.new_theme_dict[key]
         elif isinstance(key, tuple):
             key, index = key
-            start, end = (
-                self.old_theme_dict[key][index],
-                self.new_theme_dict[key][index],
-            )
+            old, new = self.old_theme_dict[key], self.new_theme_dict[key]
+            if not (isinstance(old, tuple) and isinstance(new, tuple)):
+                raise ValueError("Invalid theme_dict key")
+            start, end = old[index], new[index]
         else:
             raise ValueError("Invalid theme_dict key")
 
+        if not (isinstance(start, str) and isinstance(end, str)):
+            raise ValueError("Invalid theme_dict key")
+
         try:
-            start = _safe_color(start, default_color_function)
-            end = _safe_color(end, default_color_function)
+            _start = _safe_color(start, default_color_function)
+            _end = _safe_color(end, default_color_function)
         except ValueError:
             raise ValueError("The referenced theme_dict value is not a valid color.")
 
-        return self.interpolate(
-            start, end, ease(self.progress, self.easing_function)
-        ).get_hex_l()
+        return self.color(_start, _end)
 
     def configure(
         self,
@@ -250,7 +254,7 @@ class Colorizer:
         :return: None
         """
         _configurations = {
-            attribute: self.color(
+            attribute: self.theme_color(
                 theme_dict_color_key, lambda: func_to_get_default_color(attribute)
             )
             for attribute, theme_dict_color_key in attributes_to_theme_dict_color_keys.items()
@@ -304,7 +308,7 @@ class Colorizer:
             configuration_key: [
                 (
                     k,
-                    self.color(
+                    self.theme_color(
                         v,
                         lambda: self.styler.lookup(
                             default_style,

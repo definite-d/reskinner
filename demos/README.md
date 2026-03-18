@@ -26,6 +26,13 @@ Specifically demonstrates the `sg.pin` element functionality and addresses the s
 </details>
 
 <details>
+<summary><a href="https://github.com/definite-d/reskinner/blob/main/demos/rounded_buttons.py">rounded_buttons.py</a></summary>
+
+Demonstrates custom rounded button creation using PIL (Pillow) library with reskinner integration. Shows how to create visually appealing rounded buttons that work with theme switching. **Requires PIL/Pillow to be installed.**
+
+</details>
+
+<details>
 <summary><a href="https://github.com/definite-d/reskinner/blob/main/demos/updated_table.py">updated_table.py</a></summary>
 
 Shows how to work with table elements in Reskinner, including dynamic updates, extended selection modes, and theme integration. Demonstrates real-time data manipulation in table format.
