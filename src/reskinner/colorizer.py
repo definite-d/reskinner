@@ -223,16 +223,19 @@ class Colorizer:
             start, end = self.old_theme_dict[key], self.new_theme_dict[key]
         elif isinstance(key, tuple):
             key, index = key
-            start, end = (
-                self.old_theme_dict[key][index],
-                self.new_theme_dict[key][index],
-            )
+            old, new = self.old_theme_dict[key], self.new_theme_dict[key]
+            if not (isinstance(old, tuple) and isinstance(new, tuple)):
+                raise ValueError("Invalid theme_dict key")
+            start, end = old[index], new[index]
         else:
             raise ValueError("Invalid theme_dict key")
 
+        if not (isinstance(start, str) and isinstance(end, str)):
+            raise ValueError("Invalid theme_dict key")
+
         try:
-            start = _safe_color(start, default_color_function)
-            end = _safe_color(end, default_color_function)
+            _start = _safe_color(start, default_color_function)
+            _end = _safe_color(end, default_color_function)
         except ValueError:
             raise ValueError("The referenced theme_dict value is not a valid color.")
 
