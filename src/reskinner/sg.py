@@ -14,7 +14,7 @@ except ImportError:
         import FreeSimpleGUI as sg
 
         SG_LIB = "fsg"
-    except ImportError:
-        raise EnvironmentError(prompt)
+    except ImportError as e:
+        raise ImportError(prompt) from e
 
 __all__ = ["sg", "SG_LIB"]
