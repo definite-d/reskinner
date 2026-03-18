@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 from functools import lru_cache
 from tkinter import Widget
 from tkinter.ttk import Style
-from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union, List
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
 
 from colour import Color
 

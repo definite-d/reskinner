@@ -1,8 +1,9 @@
 from functools import partial
+from tkinter import Canvas as TKCanvas
 from tkinter import Frame as TKFrame
-from tkinter import Menu as TKMenu, Canvas as TKCanvas
+from tkinter import Menu as TKMenu
 from tkinter.ttk import Widget as TTKWidget
-from typing import Callable, Dict, List, Tuple, Type, Union, Optional
+from typing import Callable, Dict, List, Optional, Tuple, Type, Union
 
 from .colorizer import (
     Colorizer,

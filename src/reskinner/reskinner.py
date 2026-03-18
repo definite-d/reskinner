@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from datetime import datetime, timedelta
 from tkinter import TclError
 from typing import Callable, Dict, Optional, TypeVar, Union

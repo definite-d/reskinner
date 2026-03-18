@@ -17,11 +17,11 @@ class InterpolationMethod(Protocol):
     def __call__(self, start: Color, end: Color, progress: float) -> Color: ...
 
 
-def _lerp(start: float, end: float, progress: float):
+def _lerp(start: float, end: float, progress: float) -> float:
     return start + ((end - start) * progress)
 
 
-def _hue_swap(start: float, end: float, progress: float):
+def _hue_swap(start: float, end: float, progress: float) -> float:
     if start > end:
         start, end = end, start
         progress = 1 - progress
@@ -37,7 +37,7 @@ def _interpolate(
     end: Color,
     progress: float,
     components_and_methods: Dict[str, InterpolationFormula],
-):
+) -> Color:
     if progress == 1:
         return end
     elif progress == 0:
@@ -55,7 +55,7 @@ def _interpolate(
     return Color(**values)
 
 
-def rgb(start: Color, end: Color, progress: float):
+def rgb(start: Color, end: Color, progress: float) -> Color:
     return _interpolate(
         start,
         end,
@@ -68,7 +68,7 @@ def rgb(start: Color, end: Color, progress: float):
     )
 
 
-def hue(start: Color, end: Color, progress: float):
+def hue(start: Color, end: Color, progress: float) -> Color:
     return _interpolate(
         start,
         end,
@@ -81,7 +81,7 @@ def hue(start: Color, end: Color, progress: float):
     )
 
 
-def hsl(start: Color, end: Color, progress: float):
+def hsl(start: Color, end: Color, progress: float) -> Color:
     return _interpolate(
         start,
         end,
