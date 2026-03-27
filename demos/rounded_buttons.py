@@ -98,6 +98,7 @@ class RoundedButton(sg.Button):
             button_type=sg.BUTTON_TYPE_READ_FORM,
             image_data=image_to_data(img),
             button_color=text_color,
+            mouseover_colors=(None, sg.theme_background_color()),
             border_width=0,
             **kwargs,
         )
